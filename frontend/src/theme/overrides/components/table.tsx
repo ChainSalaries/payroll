@@ -1,6 +1,6 @@
-import { Theme, alpha } from '@mui/material/styles';
-import { tableCellClasses } from '@mui/material/TableCell';
-import { tableRowClasses } from '@mui/material/TableRow';
+import { Theme, alpha } from '@mui/material/styles'
+import { tableCellClasses } from '@mui/material/TableCell'
+import { tableRowClasses } from '@mui/material/TableRow'
 
 // ----------------------------------------------------------------------
 
@@ -75,5 +75,5 @@ export function table(theme: Theme) {
         },
       },
     },
-  };
+  }
 }
