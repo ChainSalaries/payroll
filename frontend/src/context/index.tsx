@@ -1,6 +1,7 @@
 'use client'
 
 import React, { ReactNode } from 'react'
+import { Provider as ReduxProvider } from 'react-redux'
 import { config, projectId } from '@/config'
 
 import { createWeb3Modal } from '@web3modal/wagmi/react'
@@ -8,6 +9,7 @@ import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { State, WagmiProvider } from 'wagmi'
+import store from '@/state/store'
 
 // Setup queryClient
 const queryClient = new QueryClient()
@@ -22,7 +24,7 @@ createWeb3Modal({
   enableOnramp: true, // Optional - false as default
 })
 
-export default function Web3ModalProvider({
+export function Web3ModalProvider({
   children,
   initialState,
 }: {
@@ -34,4 +36,8 @@ export default function Web3ModalProvider({
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )
+}
+
+export function AppStateProvider({ children }: { children: ReactNode }) {
+  return <ReduxProvider store={store}>{children}</ReduxProvider>
 }

@@ -16,6 +16,9 @@ import NavMobile from './nav/mobile'
 import NavDesktop from './nav/desktop'
 import ConnectButton from '@/components/connect-button'
 import { HEADER } from '@/config/constants'
+import { useAppSelector } from '@/state/hooks'
+import { selectRole } from '@/state/selectors'
+import { Typography } from '@mui/material'
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +26,7 @@ export default function Header() {
   const theme = useTheme()
   const mdUp = useResponsive('up', 'md')
   const offsetTop = useOffSetTop(HEADER.H_DESKTOP)
+  const role = useAppSelector(selectRole)
 
   return (
     <AppBar>
@@ -47,13 +51,22 @@ export default function Header() {
           }),
         }}
       >
+        <Container>
+          <Typography
+            variant="h4"
+            sx={{ display: { xs: 'none', md: 'block' }, textTransform: 'capitalize' }}
+          >
+            {role}
+          </Typography>
+        </Container>
         <Container sx={{ height: 1, display: 'flex', alignItems: 'center' }}>
           <Box sx={{ flexGrow: 1 }} />
 
           {mdUp && <NavDesktop offsetTop={offsetTop} data={navConfig} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-            <ConnectButton />
+            <w3m-button balance="hide" />
+
             {!mdUp && <NavMobile offsetTop={offsetTop} data={navConfig} />}
           </Stack>
         </Container>

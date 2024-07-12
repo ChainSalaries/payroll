@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 
 //
 import Header from './header'
+import { useAccount } from 'wagmi'
 
 // ----------------------------------------------------------------------
 
@@ -17,11 +18,11 @@ type Props = {
 export default function MainLayout({ children }: Props) {
   const pathname = usePathname()
   const isHome = pathname === '/'
+  const { address } = useAccount()
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 1 }}>
-      <Header />
-
+      {address && <Header />}
       <Box
         component="main"
         sx={{

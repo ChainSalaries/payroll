@@ -1,11 +1,15 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+'use client'
+
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
 
 import MainLayout from '@/layouts'
+import ConnectButtons from '@/sections/common/ConnectButtons'
+import { useAccount } from 'wagmi'
 
 export default function Home() {
+  const { isConnecting, isDisconnected } = useAccount()
+
   return (
     <MainLayout>
       <div className="flex min-h-screen items-center p-24">
@@ -13,24 +17,8 @@ export default function Home() {
           <Typography textAlign={'center'} variant="h2">
             Login
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              p: 1,
-              m: 1,
-              gap: 2,
-              width: '100%',
-              borderRadius: 1,
-            }}
-          >
-            <Button variant="contained" size="large">
-              Employee
-            </Button>
-            <Button variant="contained" size="large">
-              Employer
-            </Button>
-          </Box>
+          {isDisconnected && <ConnectButtons />}
+          {isConnecting && <Typography textAlign={'center'}>Connecting...</Typography>}
         </Stack>
       </div>
     </MainLayout>
