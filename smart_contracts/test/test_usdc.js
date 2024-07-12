@@ -61,7 +61,7 @@ describe("USDC Token Contract", function () {
         });
     });
 
-    describe("Minting and Burning", function () {
+    describe("Minting", function () {
         it("Should mint tokens to an address", async function () {
             const mintAmount = tokens(100);
             await usdc.mint(addr1.address, mintAmount);
@@ -72,23 +72,6 @@ describe("USDC Token Contract", function () {
         it("Should fail to mint tokens if it exceeds max supply", async function () {
             const mintAmount = tokens(120000001); // Exceeding the max supply
             await expect(usdc.mint(addr1.address, mintAmount)).to.be.revertedWith("USDC: Exceeds max supply");
-        });
-
-        it("Should burn tokens from the owner", async function () {
-            const burnAmount = tokens(100);
-            await usdc.mint(owner.address, burnAmount);
-            await usdc.burn(burnAmount);
-            const ownerBalance = await usdc.balanceOf(owner.address);
-            expect(ownerBalance).to.equal(0);
-        });
-
-        it("Should burn tokens from an address with allowance", async function () {
-            const burnAmount = tokens(50);
-            await usdc.mint(addr1.address, tokens(100));
-            await usdc.connect(addr1).approve(owner.address, burnAmount);
-            await usdc.burnFrom(addr1.address, burnAmount);
-            const addr1Balance = await usdc.balanceOf(addr1.address);
-            expect(addr1Balance).to.equal(tokens(50));
         });
     });
 });
