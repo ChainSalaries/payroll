@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles'
 
 // ----------------------------------------------------------------------
 
@@ -20,5 +20,5 @@ export function radio(theme: Theme) {
         },
       },
     },
-  };
+  }
 }
