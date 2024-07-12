@@ -6,10 +6,33 @@ export async function GET(req: Request) {
     const owner = searchParams.get('owner')
 
     //As a mock, return empty organization info:
-    const response = {
+    const emptyResponse = {
         name: "",
+        id: 0,
         balance: 0,
         employees: []
+    }
+
+    const fullResponse = {
+        name: "ABC Organization",
+        id: 7,
+        balance: 1565,
+        employees: [
+            {
+                address: 0xabcdef,
+                salary: 230,
+                joined: 1720825372,
+                balance: 660,
+                verified: false,
+            },
+            {
+                address: 0x1234567,
+                salary: 185,
+                joined: 1719825372,
+                balance: 840,
+                verified: true,
+            },
+        ]
     }
 
     // const client = createPublicClient({
@@ -24,5 +47,5 @@ export async function GET(req: Request) {
     //     "block": blockNumber.toString()
     // } 
 
-    return Response.json(response)
+    return Response.json(owner == "0xABC" ? fullResponse : emptyResponse)
 }
