@@ -8,7 +8,7 @@ contract USDC is ERC20, Ownable {
     uint256 public constant MAX_SUPPLY = 120000000 * 10**6; // 120 million tokens with 6 decimals
     uint8 private _decimals;
 
-    constructor() ERC20("USD Coin", "USDC") Ownable() {
+    constructor() ERC20("USD Coin", "USDC") Ownable(msg.sender) {
         _decimals = 6;
     }
 
