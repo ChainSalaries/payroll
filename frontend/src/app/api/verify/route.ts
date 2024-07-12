@@ -1,18 +1,22 @@
 import { createPublicClient, http } from 'viem'
 import { baseSepolia } from 'viem/chains'
 
-export async function POST() {
-    const client = createPublicClient({
-        chain: baseSepolia,
-        transport: http("https://sepolia.base.org"),
-    })
+export async function POST(req: Request) {
+    const { employee, organization, worldID } = await req.json()
 
-    // 3. Consume an action!
-    const blockNumber = await client.getBlockNumber()
+    console.log(employee)
 
-    const data = {
-        "block": blockNumber.toString()
-    }
+    // const client = createPublicClient({
+    //     chain: baseSepolia,
+    //     transport: http(),
+    // })
 
-    return Response.json(data)
+    // // 3. Consume an action!
+    // const blockNumber = await client.getBlockNumber()
+
+    // const data = {
+    //     "block": blockNumber.toString()
+    // }
+
+    return Response.json(organization)
 }
