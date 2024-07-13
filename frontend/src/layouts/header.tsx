@@ -8,16 +8,13 @@ import Container from '@mui/material/Container'
 // hooks
 import { useOffSetTop } from '@/hooks/use-off-set-top'
 import { useResponsive } from '@/hooks/use-responsive'
-// theme
-// import { bgBlur } from '@/theme/css'
 // routes
 import { navConfig } from './config-navigation'
 import NavMobile from './nav/mobile'
 import NavDesktop from './nav/desktop'
-import ConnectButton from '@/components/connect-button'
 import { HEADER } from '@/config/constants'
 import { useAppSelector } from '@/state/hooks'
-import { selectRole } from '@/state/selectors'
+import { selectOrganization, selectRole } from '@/state/selectors'
 import { Typography } from '@mui/material'
 import { bgBlur } from '@/theme/css'
 
@@ -28,6 +25,7 @@ export default function Header() {
   const mdUp = useResponsive('up', 'md')
   const offsetTop = useOffSetTop(HEADER.H_DESKTOP)
   const role = useAppSelector(selectRole)
+  const organization = useAppSelector(selectOrganization)
 
   return (
     <AppBar
@@ -62,7 +60,7 @@ export default function Header() {
             variant="h4"
             sx={{ display: { xs: 'none', md: 'block' }, textTransform: 'capitalize' }}
           >
-            {role}
+            {organization?.name}
           </Typography>
         </Container>
         <Container sx={{ height: 1, display: 'flex', alignItems: 'center' }}>
@@ -71,7 +69,19 @@ export default function Header() {
           {mdUp && <NavDesktop offsetTop={offsetTop} data={navConfig} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-            <w3m-button balance="hide" />
+            <Stack alignItems="center">
+              <Typography
+                variant="inherit"
+                sx={{
+                  display: { xs: 'none', md: 'block' },
+                  textTransform: 'capitalize',
+                  marginBottom: '-5px',
+                }}
+              >
+                {role}
+              </Typography>
+              <w3m-button balance="hide" />
+            </Stack>
 
             {!mdUp && <NavMobile offsetTop={offsetTop} data={navConfig} />}
           </Stack>
