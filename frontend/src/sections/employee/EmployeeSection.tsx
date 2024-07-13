@@ -24,7 +24,7 @@ export default function EmployeeSection() {
     <div>
       <Stack sx={{ width: '100%' }}>
 
-        <Typography textAlign={'center'} variant="h3">
+        <Typography textAlign={'center'} color="primary" variant="h2">
           Welcome
         </Typography>
 

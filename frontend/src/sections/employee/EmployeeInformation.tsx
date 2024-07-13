@@ -15,16 +15,31 @@ import { useState } from 'react'
 import { Employee } from '@/state/types'
 import moment from 'moment'
 import { formatEther } from 'viem'
+import Iconify from '@/components/iconify'
+import EnsName from '@/components/ens-name'
 //import fetch from 'node-fetch'
 
 type Props = {
   address: `0x${string}`
 }
 export default function EmployeeInformation({ address }: Props) {
-  const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
-  fetchEmployee(address).then((employee) => {
-    setEmployeeInfo(employee)
-  })
+  //const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
+  const employeeInfo =
+    {
+      address: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+      orgAddress: "0xabcdef",
+      verified: false,
+      salary: 100000000000,
+      activity: "Developer",
+      startMoment: 1720908305,
+      openBalance: 648324000000,
+      latestPayReceived: 100,
+    } as Employee
+
+  // fetchEmployee(address).then((employee) => {
+  //   //setEmployeeInfo(employee)
+  // })
+
 
   if (!employeeInfo) {
     return null
@@ -59,8 +74,8 @@ export default function EmployeeInformation({ address }: Props) {
                     src="https://c8.alamy.com/comp/2HWB4X9/bored-ape-yacht-club-nft-artwork-trippy-color-ape-with-gradient-background-crypto-graphic-asset-flat-vector-illustration-2HWB4X9.jpg"
                   />
                 </Paper>
-                <div>Lensname</div>
-                <div>{address.substring(0, 10)}...</div>
+                <div><p className="ensName"><EnsName address={employeeInfo.address} /></p></div>
+                <div>{address.substring(0, 15)}...</div>
 
               </div>
               <div className="employeeDataSide">
@@ -87,6 +102,10 @@ export default function EmployeeInformation({ address }: Props) {
                     address={address}
                   />
                 </div>
+                <div className="totalBalance">
+                  <p className="balancep">Balance: <span className="value">1.25 Ξ</span></p>
+                  <Button style={{ minWidth: '200px', minHeight: '35px' }} variant='contained' color='success'><Iconify icon="tabler:world" />Pay Now</Button>
+                </div>
               </div>
             </div>
           </Paper>
@@ -95,33 +114,4 @@ export default function EmployeeInformation({ address }: Props) {
     </div >
   )
 }
-
-
-// import { type BaseError, useReadContract } from 'wagmi'
-
-// function ReadContract() {
-//   const { 
-//     data: balance,
-//     error,
-//     isPending
-//   } = useReadContract({
-//     ...wagmiContractConfig,
-//     functionName: 'balanceOf',
-//     args: ['0x03A71968491d55603FFe1b11A9e23eF013f75bCF'],
-//   })
-
-//   if (isPending) return <div>Loading...</div>
-
-//   if (error)
-//     return (
-//       <div>
-//         Error: {(error as BaseError).shortMessage || error.message}
-//       </div>
-//     )
-
-//   return (
-//     <div>Balance: {balance?.toString()}</div>
-//   )
-// }
-
 

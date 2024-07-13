@@ -35,7 +35,7 @@ export default function VerifyWorldID({ address }: Props) {
                 handleVerify={verifyProof}
                 verification_level={VerificationLevel.Device} // minimum verification level accepted, defaults to "orb"
             >
-                {({ open }) => <Button variant='contained' onClick={open} color='primary'><Iconify icon="tabler:world" />World ID Verification</Button>}
+                {({ open }) => <Button style={{ minWidth: '200px', minHeight: '35px' }} variant='contained' onClick={open} color='info'><Iconify icon="tabler:world" />World ID Verification</Button>}
             </IDKitWidget>
         </div>
     )
