@@ -25,7 +25,7 @@ export async function verifyEmployee(address: Address) {
     args: [address],
     address: PAYROLL_CONTRACT_ADDRESS,
   })
-  console.log('add new Employee transaction', result)
+  console.log('verifying employee', result)
   return result
 }
 
