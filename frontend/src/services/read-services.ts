@@ -29,7 +29,7 @@ export async function fetchEmployees(employeeAddresses: readonly `0x${string}`[]
         verified: Boolean(r[3]),
         salary: Number(r[4]),
         activity: r[5],
-        startMoment: Number(r[6]),
+        daysWorked: Number(r[6]),
         latestPayReceived: Number(r[7]),
         openBalance: Number(r[8]),
       } as Employee
@@ -49,13 +49,11 @@ export async function fetchEmployee(address: `0x${string}`) {
 
   console.log('fetchEmployee', result)
   return {
-    address: result[0],
-    orgAddress: result[1],
-    verified: Boolean(result[3]),
-    salary: Number(result[4]),
-    activity: result[5],
-    startMoment: Number(result[6]),
-    latestPayReceived: Number(result[7]),
-    openBalance: Number(result[8]),
+    address: result.employeeAddress,
+    orgAddress: result.companyAddress,
+    salary: Number(result.dailyWageWei),
+    verified: Boolean(result.worldidverified),
+    activity: result.activity,
+    daysWorked: Number(result.daysWorked),
   } as Employee
 }

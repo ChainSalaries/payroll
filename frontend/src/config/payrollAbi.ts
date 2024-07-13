@@ -1,36 +1,22 @@
 const abi = [
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: true,
         internalType: 'address',
-        name: 'usdcAddress',
+        name: 'companyAddress',
         type: 'address',
       },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
-    inputs: [
       {
-        internalType: 'address',
-        name: 'owner',
-        type: 'address',
+        indexed: false,
+        internalType: 'string',
+        name: 'companyName',
+        type: 'string',
       },
     ],
-    name: 'OwnableInvalidOwner',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-    ],
-    name: 'OwnableUnauthorizedAccount',
-    type: 'error',
+    name: 'CompanyAdded',
+    type: 'event',
   },
   {
     anonymous: false,
@@ -38,44 +24,130 @@ const abi = [
       {
         indexed: true,
         internalType: 'address',
-        name: 'previousOwner',
+        name: 'companyAddress',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'CompanyFunded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'employeeAddress',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'daysWorked',
+        type: 'uint256',
+      },
+    ],
+    name: 'DaysWorkedUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'employeeAddress',
         type: 'address',
       },
       {
         indexed: true,
         internalType: 'address',
-        name: 'newOwner',
+        name: 'companyAddress',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'dailyWageWei',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'activity',
+        type: 'string',
+      },
     ],
-    name: 'OwnershipTransferred',
+    name: 'EmployeeAdded',
     type: 'event',
   },
   {
-    stateMutability: 'payable',
-    type: 'fallback',
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'employeeAddress',
+        type: 'address',
+      },
+    ],
+    name: 'EmployeeVerified',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'employeeAddress',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'PayoutMade',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_companyName',
+        type: 'string',
+      },
+    ],
+    name: 'addCompany',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
       {
         internalType: 'address',
-        name: 'employeeAccount',
+        name: '_employeeAddress',
         type: 'address',
       },
       {
         internalType: 'uint256',
-        name: 'dailySalaryUSDC',
+        name: '_dailyWageWei',
         type: 'uint256',
       },
       {
         internalType: 'string',
-        name: 'activity',
+        name: '_activity',
         type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'startMoment',
-        type: 'uint256',
       },
     ],
     name: 'addEmployee',
@@ -87,52 +159,25 @@ const abi = [
     inputs: [
       {
         internalType: 'address',
-        name: '_orgAddress',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'companies',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'companyAddress',
         type: 'address',
       },
       {
         internalType: 'string',
-        name: '_orgName',
+        name: 'companyName',
         type: 'string',
       },
-    ],
-    name: 'addOrganization',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'employeeAccount',
-        type: 'address',
-      },
-    ],
-    name: 'calculateOpenBalance',
-    outputs: [
       {
         internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'employeeAccount',
-        type: 'address',
-      },
-    ],
-    name: 'calculateTimeDiff',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
+        name: 'treasury',
         type: 'uint256',
       },
     ],
@@ -151,64 +196,79 @@ const abi = [
     outputs: [
       {
         internalType: 'address',
-        name: 'employeeAccount',
+        name: 'employeeAddress',
         type: 'address',
       },
       {
         internalType: 'address',
-        name: 'companyAccount',
+        name: 'companyAddress',
         type: 'address',
       },
       {
-        internalType: 'string',
-        name: 'companyName',
-        type: 'string',
-      },
-      {
-        internalType: 'uint8',
-        name: 'worldcoinVerified',
-        type: 'uint8',
+        internalType: 'uint256',
+        name: 'dailyWageWei',
+        type: 'uint256',
       },
       {
         internalType: 'uint256',
-        name: 'dailySalaryUSDC',
+        name: 'daysWorked',
         type: 'uint256',
+      },
+      {
+        internalType: 'uint8',
+        name: 'worldidverified',
+        type: 'uint8',
       },
       {
         internalType: 'string',
         name: 'activity',
         type: 'string',
       },
-      {
-        internalType: 'uint256',
-        name: 'startMoment',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'latestPayReceived',
-        type: 'uint256',
-      },
     ],
     stateMutability: 'view',
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'fundCompany',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_orgId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
+        internalType: 'address',
+        name: 'companyAddress',
+        type: 'address',
       },
     ],
-    name: 'fundOrganizationTreasury',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    name: 'getCompany',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'address',
+            name: 'companyAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'string',
+            name: 'companyName',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'treasury',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct SimplePayroll.Company',
+        name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -222,198 +282,39 @@ const abi = [
     name: 'getEmployee',
     outputs: [
       {
-        internalType: 'address',
-        name: 'employeeAccount',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'companyAccount',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'companyName',
-        type: 'string',
-      },
-      {
-        internalType: 'uint8',
-        name: 'worldcoinVerified',
-        type: 'uint8',
-      },
-      {
-        internalType: 'uint256',
-        name: 'dailySalaryUSDC',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: 'activity',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'startMoment',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'latestPayReceived',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'openBalance',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'orgId',
-        type: 'uint256',
-      },
-    ],
-    name: 'getEmployeesByOrganization',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'orgAddress',
-        type: 'address',
-      },
-    ],
-    name: 'getFullOrganizationDetails',
-    outputs: [
-      {
-        internalType: 'string',
-        name: 'name',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'id',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'balance',
-        type: 'uint256',
-      },
-      {
         components: [
           {
             internalType: 'address',
-            name: 'employeeAccount',
+            name: 'employeeAddress',
             type: 'address',
           },
           {
             internalType: 'address',
-            name: 'companyAccount',
+            name: 'companyAddress',
             type: 'address',
           },
           {
-            internalType: 'string',
-            name: 'companyName',
-            type: 'string',
-          },
-          {
-            internalType: 'uint8',
-            name: 'worldcoinVerified',
-            type: 'uint8',
+            internalType: 'uint256',
+            name: 'dailyWageWei',
+            type: 'uint256',
           },
           {
             internalType: 'uint256',
-            name: 'dailySalaryUSDC',
+            name: 'daysWorked',
             type: 'uint256',
+          },
+          {
+            internalType: 'uint8',
+            name: 'worldidverified',
+            type: 'uint8',
           },
           {
             internalType: 'string',
             name: 'activity',
             type: 'string',
           },
-          {
-            internalType: 'uint256',
-            name: 'startMoment',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'latestPayReceived',
-            type: 'uint256',
-          },
         ],
-        internalType: 'struct Payroll.Employee[]',
-        name: 'employeesList',
-        type: 'tuple[]',
-      },
-      {
-        internalType: 'uint256[]',
-        name: 'openBalances',
-        type: 'uint256[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'orgAddress',
-        type: 'address',
-      },
-    ],
-    name: 'getOrganization',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'orgAddress',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'orgId',
-            type: 'uint256',
-          },
-          {
-            internalType: 'string',
-            name: 'orgName',
-            type: 'string',
-          },
-          {
-            internalType: 'uint256',
-            name: 'orgTreasury',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'employeeCount',
-            type: 'uint256',
-          },
-          {
-            internalType: 'address[]',
-            name: 'employeeAddresses',
-            type: 'address[]',
-          },
-        ],
-        internalType: 'struct Payroll.Organization',
+        internalType: 'struct SimplePayroll.Employee',
         name: '',
         type: 'tuple',
       },
@@ -422,118 +323,14 @@ const abi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'getTotalEmployees',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'nextOrgId',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       {
         internalType: 'address',
-        name: '',
+        name: '_employeeAddress',
         type: 'address',
       },
     ],
-    name: 'organizationIds',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'organizations',
-    outputs: [
-      {
-        internalType: 'address',
-        name: 'orgAddress',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'orgId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: 'orgName',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'orgTreasury',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'employeeCount',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'employeeAccount',
-        type: 'address',
-      },
-    ],
-    name: 'payOpenBalance',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
+    name: 'payout',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -542,57 +339,18 @@ const abi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'employeeAccount',
+        name: '_employeeAddress',
         type: 'address',
       },
       {
         internalType: 'uint256',
-        name: 'hoursBack',
+        name: '_daysWorked',
         type: 'uint256',
       },
     ],
-    name: 'setLatestPayReceivedBack',
+    name: 'updateDaysWorked',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'totalEmployees',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'usdc',
-    outputs: [
-      {
-        internalType: 'contract IUSDC',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {

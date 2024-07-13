@@ -1,31 +1,26 @@
 import {
+  CompanyAdded as CompanyAddedEvent,
+  CompanyFunded as CompanyFundedEvent,
+  DaysWorkedUpdated as DaysWorkedUpdatedEvent,
   EmployeeAdded as EmployeeAddedEvent,
-  EmployeePaid as EmployeePaidEvent,
   EmployeeVerified as EmployeeVerifiedEvent,
-  LatestPayReceivedSetBack as LatestPayReceivedSetBackEvent,
-  OrganizationAdded as OrganizationAddedEvent,
-  OwnershipTransferred as OwnershipTransferredEvent,
-  TreasuryFunded as TreasuryFundedEvent
+  PayoutMade as PayoutMadeEvent
 } from "../generated/Contract/Contract"
 import {
+  CompanyAdded,
+  CompanyFunded,
+  DaysWorkedUpdated,
   EmployeeAdded,
-  EmployeePaid,
   EmployeeVerified,
-  LatestPayReceivedSetBack,
-  OrganizationAdded,
-  OwnershipTransferred,
-  TreasuryFunded
+  PayoutMade
 } from "../generated/schema"
 
-export function handleEmployeeAdded(event: EmployeeAddedEvent): void {
-  let entity = new EmployeeAdded(
+export function handleCompanyAdded(event: CompanyAddedEvent): void {
+  let entity = new CompanyAdded(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.employeeAccount = event.params.employeeAccount
-  entity.companyAccount = event.params.companyAccount
-  entity.dailySalaryWei = event.params.dailySalaryWei
-  entity.activity = event.params.activity
-  entity.startMoment = event.params.startMoment
+  entity.companyAddress = event.params.companyAddress
+  entity.companyName = event.params.companyName
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -34,13 +29,42 @@ export function handleEmployeeAdded(event: EmployeeAddedEvent): void {
   entity.save()
 }
 
-export function handleEmployeePaid(event: EmployeePaidEvent): void {
-  let entity = new EmployeePaid(
+export function handleCompanyFunded(event: CompanyFundedEvent): void {
+  let entity = new CompanyFunded(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.employeeAccount = event.params.employeeAccount
+  entity.companyAddress = event.params.companyAddress
   entity.amount = event.params.amount
-  entity.latestPayReceived = event.params.latestPayReceived
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleDaysWorkedUpdated(event: DaysWorkedUpdatedEvent): void {
+  let entity = new DaysWorkedUpdated(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.employeeAddress = event.params.employeeAddress
+  entity.daysWorked = event.params.daysWorked
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleEmployeeAdded(event: EmployeeAddedEvent): void {
+  let entity = new EmployeeAdded(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.employeeAddress = event.params.employeeAddress
+  entity.companyAddress = event.params.companyAddress
+  entity.dailyWageWei = event.params.dailyWageWei
+  entity.activity = event.params.activity
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -53,8 +77,7 @@ export function handleEmployeeVerified(event: EmployeeVerifiedEvent): void {
   let entity = new EmployeeVerified(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.employeeAccount = event.params.employeeAccount
-  entity.companyAccount = event.params.companyAccount
+  entity.employeeAddress = event.params.employeeAddress
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -63,58 +86,11 @@ export function handleEmployeeVerified(event: EmployeeVerifiedEvent): void {
   entity.save()
 }
 
-export function handleLatestPayReceivedSetBack(
-  event: LatestPayReceivedSetBackEvent
-): void {
-  let entity = new LatestPayReceivedSetBack(
+export function handlePayoutMade(event: PayoutMadeEvent): void {
+  let entity = new PayoutMade(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.employeeAccount = event.params.employeeAccount
-  entity.hoursBack = event.params.hoursBack
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleOrganizationAdded(event: OrganizationAddedEvent): void {
-  let entity = new OrganizationAdded(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.orgId = event.params.orgId
-  entity.orgAddress = event.params.orgAddress
-  entity.orgName = event.params.orgName
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent
-): void {
-  let entity = new OwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.previousOwner = event.params.previousOwner
-  entity.newOwner = event.params.newOwner
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleTreasuryFunded(event: TreasuryFundedEvent): void {
-  let entity = new TreasuryFunded(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.orgId = event.params.orgId
+  entity.employeeAddress = event.params.employeeAddress
   entity.amount = event.params.amount
 
   entity.blockNumber = event.block.number

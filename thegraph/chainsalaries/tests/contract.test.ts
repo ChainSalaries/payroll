@@ -7,33 +7,25 @@ import {
   afterAll
 } from "matchstick-as/assembly/index"
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { EmployeeAdded } from "../generated/schema"
-import { EmployeeAdded as EmployeeAddedEvent } from "../generated/Contract/Contract"
-import { handleEmployeeAdded } from "../src/contract"
-import { createEmployeeAddedEvent } from "./contract-utils"
+import { CompanyAdded } from "../generated/schema"
+import { CompanyAdded as CompanyAddedEvent } from "../generated/Contract/Contract"
+import { handleCompanyAdded } from "../src/contract"
+import { createCompanyAddedEvent } from "./contract-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let employeeAccount = Address.fromString(
+    let companyAddress = Address.fromString(
       "0x0000000000000000000000000000000000000001"
     )
-    let companyAccount = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
+    let companyName = "Example string value"
+    let newCompanyAddedEvent = createCompanyAddedEvent(
+      companyAddress,
+      companyName
     )
-    let dailySalaryWei = BigInt.fromI32(234)
-    let activity = "Example string value"
-    let startMoment = BigInt.fromI32(234)
-    let newEmployeeAddedEvent = createEmployeeAddedEvent(
-      employeeAccount,
-      companyAccount,
-      dailySalaryWei,
-      activity,
-      startMoment
-    )
-    handleEmployeeAdded(newEmployeeAddedEvent)
+    handleCompanyAdded(newCompanyAddedEvent)
   })
 
   afterAll(() => {
@@ -43,39 +35,21 @@ describe("Describe entity assertions", () => {
   // For more test scenarios, see:
   // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
 
-  test("EmployeeAdded created and stored", () => {
-    assert.entityCount("EmployeeAdded", 1)
+  test("CompanyAdded created and stored", () => {
+    assert.entityCount("CompanyAdded", 1)
 
     // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
     assert.fieldEquals(
-      "EmployeeAdded",
+      "CompanyAdded",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "employeeAccount",
+      "companyAddress",
       "0x0000000000000000000000000000000000000001"
     )
     assert.fieldEquals(
-      "EmployeeAdded",
+      "CompanyAdded",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "companyAccount",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "EmployeeAdded",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "dailySalaryWei",
-      "234"
-    )
-    assert.fieldEquals(
-      "EmployeeAdded",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "activity",
+      "companyName",
       "Example string value"
-    )
-    assert.fieldEquals(
-      "EmployeeAdded",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "startMoment",
-      "234"
     )
 
     // More assert options:

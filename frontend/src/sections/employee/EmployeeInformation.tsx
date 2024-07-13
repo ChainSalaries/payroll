@@ -3,13 +3,9 @@
 // import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useAppDispatch } from '@/state/hooks'
 import Box from '@mui/material/Box'
-import styles from './styles.module.css'
-import { Button, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Button, Paper } from '@mui/material'
 
-import { IDKitWidget, ISuccessResult, VerificationLevel } from '@worldcoin/idkit'
-import { useAccount } from 'wagmi'
 import WorldID from './WorldID'
-import useGetEmployee from '@/hooks/use-get-employee'
 import { fetchEmployee } from '@/services/read-services'
 import { useState } from 'react'
 import { Employee } from '@/state/types'
@@ -24,22 +20,18 @@ type Props = {
 }
 export default function EmployeeInformation({ address }: Props) {
   //const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
-  const employeeInfo =
-    {
-      address: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-      orgAddress: "0xabcdef",
-      verified: false,
-      salary: 100000000000,
-      activity: "Developer",
-      startMoment: 1720908305,
-      openBalance: 648324000000,
-      latestPayReceived: 100,
-    } as Employee
+  const employeeInfo = {
+    address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    orgAddress: '0xabcdef',
+    verified: false,
+    salary: 100000000000,
+    activity: 'Developer',
+    daysWorked: 32,
+  } as Employee
 
   // fetchEmployee(address).then((employee) => {
   //   //setEmployeeInfo(employee)
   // })
-
 
   if (!employeeInfo) {
     return null
@@ -68,15 +60,18 @@ export default function EmployeeInformation({ address }: Props) {
                     sx={{
                       height: 200,
                       width: 200,
-                      boxShadow: 5
+                      boxShadow: 5,
                     }}
                     alt="The house from the offer."
                     src="https://c8.alamy.com/comp/2HWB4X9/bored-ape-yacht-club-nft-artwork-trippy-color-ape-with-gradient-background-crypto-graphic-asset-flat-vector-illustration-2HWB4X9.jpg"
                   />
                 </Paper>
-                <div><p className="ensName"><EnsName address={employeeInfo.address} /></p></div>
+                <div>
+                  <p className="ensName">
+                    <EnsName address={employeeInfo.address} />
+                  </p>
+                </div>
                 <div>{address.substring(0, 15)}...</div>
-
               </div>
               <div className="employeeDataSide">
                 <div className="employeeData">
@@ -90,28 +85,34 @@ export default function EmployeeInformation({ address }: Props) {
                   </div>
                   <div className="employeeDataValues">
                     <ul className="employeeDataValues">
-                      <li>{moment.unix(employeeInfo.startMoment).format('MMMM Do YYYY')}</li>
+                      <li>{moment.unix(employeeInfo.daysWorked).format('MMMM Do YYYY')}</li>
                       <li>{employeeInfo.activity}</li>
                       <li>{formatEther(BigInt(employeeInfo.salary))} Ξ</li>
-                      <li>{employeeInfo.verified ? "Verified" : "Not verified"}</li>
+                      <li>{employeeInfo.verified ? 'Verified' : 'Not verified'}</li>
                     </ul>
                   </div>
                 </div>
                 <div className="worldIdButton">
-                  <WorldID
-                    address={address}
-                  />
+                  <WorldID address={address} />
                 </div>
                 <div className="totalBalance">
-                  <p className="balancep">Balance: <span className="value">1.25 Ξ</span></p>
-                  <Button style={{ minWidth: '200px', minHeight: '35px' }} variant='contained' color='success'><Iconify icon="tabler:world" />Pay Now</Button>
+                  <p className="balancep">
+                    Balance: <span className="value">1.25 Ξ</span>
+                  </p>
+                  <Button
+                    style={{ minWidth: '200px', minHeight: '35px' }}
+                    variant="contained"
+                    color="success"
+                  >
+                    <Iconify icon="tabler:world" />
+                    Pay Now
+                  </Button>
                 </div>
               </div>
             </div>
           </Paper>
         </Box>
       </div>
-    </div >
+    </div>
   )
 }
-

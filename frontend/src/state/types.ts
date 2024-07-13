@@ -26,17 +26,13 @@ export type Employee = {
   verified: boolean
   salary: number
   activity: string
-  startMoment: number
-  latestPayReceived: number
-  openBalance: number
+  daysWorked: number
 }
 
 export type Organization = {
   orgAddress: `0x${string}`
-  orgId: number
   orgName: string
   orgTreasury: number
-  employeeCount: number
   employees?: Employee[]
 }
 

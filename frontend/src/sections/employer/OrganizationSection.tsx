@@ -167,11 +167,9 @@ export default function OrganizationSection({ address }: Props) {
   useEffect(() => {
     if (data) {
       const updatedOrg: Organization = {
-        orgAddress: data.orgAddress,
-        orgId: Number(data.orgId),
-        orgName: data.orgName,
-        orgTreasury: Number(data.orgTreasury),
-        employeeCount: Number(data.employeeCount),
+        orgAddress: data.companyAddress,
+        orgName: data.companyName,
+        orgTreasury: Number(data.treasury),
         employees: org?.employees,
       }
 

@@ -1,21 +1,88 @@
 import { newMockEvent } from "matchstick-as"
 import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
+  CompanyAdded,
+  CompanyFunded,
+  DaysWorkedUpdated,
   EmployeeAdded,
-  EmployeePaid,
   EmployeeVerified,
-  LatestPayReceivedSetBack,
-  OrganizationAdded,
-  OwnershipTransferred,
-  TreasuryFunded
+  PayoutMade
 } from "../generated/Contract/Contract"
 
+export function createCompanyAddedEvent(
+  companyAddress: Address,
+  companyName: string
+): CompanyAdded {
+  let companyAddedEvent = changetype<CompanyAdded>(newMockEvent())
+
+  companyAddedEvent.parameters = new Array()
+
+  companyAddedEvent.parameters.push(
+    new ethereum.EventParam(
+      "companyAddress",
+      ethereum.Value.fromAddress(companyAddress)
+    )
+  )
+  companyAddedEvent.parameters.push(
+    new ethereum.EventParam(
+      "companyName",
+      ethereum.Value.fromString(companyName)
+    )
+  )
+
+  return companyAddedEvent
+}
+
+export function createCompanyFundedEvent(
+  companyAddress: Address,
+  amount: BigInt
+): CompanyFunded {
+  let companyFundedEvent = changetype<CompanyFunded>(newMockEvent())
+
+  companyFundedEvent.parameters = new Array()
+
+  companyFundedEvent.parameters.push(
+    new ethereum.EventParam(
+      "companyAddress",
+      ethereum.Value.fromAddress(companyAddress)
+    )
+  )
+  companyFundedEvent.parameters.push(
+    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
+  )
+
+  return companyFundedEvent
+}
+
+export function createDaysWorkedUpdatedEvent(
+  employeeAddress: Address,
+  daysWorked: BigInt
+): DaysWorkedUpdated {
+  let daysWorkedUpdatedEvent = changetype<DaysWorkedUpdated>(newMockEvent())
+
+  daysWorkedUpdatedEvent.parameters = new Array()
+
+  daysWorkedUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "employeeAddress",
+      ethereum.Value.fromAddress(employeeAddress)
+    )
+  )
+  daysWorkedUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "daysWorked",
+      ethereum.Value.fromUnsignedBigInt(daysWorked)
+    )
+  )
+
+  return daysWorkedUpdatedEvent
+}
+
 export function createEmployeeAddedEvent(
-  employeeAccount: Address,
-  companyAccount: Address,
-  dailySalaryWei: BigInt,
-  activity: string,
-  startMoment: BigInt
+  employeeAddress: Address,
+  companyAddress: Address,
+  dailyWageWei: BigInt,
+  activity: string
 ): EmployeeAdded {
   let employeeAddedEvent = changetype<EmployeeAdded>(newMockEvent())
 
@@ -23,66 +90,31 @@ export function createEmployeeAddedEvent(
 
   employeeAddedEvent.parameters.push(
     new ethereum.EventParam(
-      "employeeAccount",
-      ethereum.Value.fromAddress(employeeAccount)
+      "employeeAddress",
+      ethereum.Value.fromAddress(employeeAddress)
     )
   )
   employeeAddedEvent.parameters.push(
     new ethereum.EventParam(
-      "companyAccount",
-      ethereum.Value.fromAddress(companyAccount)
+      "companyAddress",
+      ethereum.Value.fromAddress(companyAddress)
     )
   )
   employeeAddedEvent.parameters.push(
     new ethereum.EventParam(
-      "dailySalaryWei",
-      ethereum.Value.fromUnsignedBigInt(dailySalaryWei)
+      "dailyWageWei",
+      ethereum.Value.fromUnsignedBigInt(dailyWageWei)
     )
   )
   employeeAddedEvent.parameters.push(
     new ethereum.EventParam("activity", ethereum.Value.fromString(activity))
   )
-  employeeAddedEvent.parameters.push(
-    new ethereum.EventParam(
-      "startMoment",
-      ethereum.Value.fromUnsignedBigInt(startMoment)
-    )
-  )
 
   return employeeAddedEvent
 }
 
-export function createEmployeePaidEvent(
-  employeeAccount: Address,
-  amount: BigInt,
-  latestPayReceived: BigInt
-): EmployeePaid {
-  let employeePaidEvent = changetype<EmployeePaid>(newMockEvent())
-
-  employeePaidEvent.parameters = new Array()
-
-  employeePaidEvent.parameters.push(
-    new ethereum.EventParam(
-      "employeeAccount",
-      ethereum.Value.fromAddress(employeeAccount)
-    )
-  )
-  employeePaidEvent.parameters.push(
-    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
-  )
-  employeePaidEvent.parameters.push(
-    new ethereum.EventParam(
-      "latestPayReceived",
-      ethereum.Value.fromUnsignedBigInt(latestPayReceived)
-    )
-  )
-
-  return employeePaidEvent
-}
-
 export function createEmployeeVerifiedEvent(
-  employeeAccount: Address,
-  companyAccount: Address
+  employeeAddress: Address
 ): EmployeeVerified {
   let employeeVerifiedEvent = changetype<EmployeeVerified>(newMockEvent())
 
@@ -90,108 +122,31 @@ export function createEmployeeVerifiedEvent(
 
   employeeVerifiedEvent.parameters.push(
     new ethereum.EventParam(
-      "employeeAccount",
-      ethereum.Value.fromAddress(employeeAccount)
-    )
-  )
-  employeeVerifiedEvent.parameters.push(
-    new ethereum.EventParam(
-      "companyAccount",
-      ethereum.Value.fromAddress(companyAccount)
+      "employeeAddress",
+      ethereum.Value.fromAddress(employeeAddress)
     )
   )
 
   return employeeVerifiedEvent
 }
 
-export function createLatestPayReceivedSetBackEvent(
-  employeeAccount: Address,
-  hoursBack: BigInt
-): LatestPayReceivedSetBack {
-  let latestPayReceivedSetBackEvent = changetype<LatestPayReceivedSetBack>(
-    newMockEvent()
-  )
-
-  latestPayReceivedSetBackEvent.parameters = new Array()
-
-  latestPayReceivedSetBackEvent.parameters.push(
-    new ethereum.EventParam(
-      "employeeAccount",
-      ethereum.Value.fromAddress(employeeAccount)
-    )
-  )
-  latestPayReceivedSetBackEvent.parameters.push(
-    new ethereum.EventParam(
-      "hoursBack",
-      ethereum.Value.fromUnsignedBigInt(hoursBack)
-    )
-  )
-
-  return latestPayReceivedSetBackEvent
-}
-
-export function createOrganizationAddedEvent(
-  orgId: BigInt,
-  orgAddress: Address,
-  orgName: string
-): OrganizationAdded {
-  let organizationAddedEvent = changetype<OrganizationAdded>(newMockEvent())
-
-  organizationAddedEvent.parameters = new Array()
-
-  organizationAddedEvent.parameters.push(
-    new ethereum.EventParam("orgId", ethereum.Value.fromUnsignedBigInt(orgId))
-  )
-  organizationAddedEvent.parameters.push(
-    new ethereum.EventParam(
-      "orgAddress",
-      ethereum.Value.fromAddress(orgAddress)
-    )
-  )
-  organizationAddedEvent.parameters.push(
-    new ethereum.EventParam("orgName", ethereum.Value.fromString(orgName))
-  )
-
-  return organizationAddedEvent
-}
-
-export function createOwnershipTransferredEvent(
-  previousOwner: Address,
-  newOwner: Address
-): OwnershipTransferred {
-  let ownershipTransferredEvent = changetype<OwnershipTransferred>(
-    newMockEvent()
-  )
-
-  ownershipTransferredEvent.parameters = new Array()
-
-  ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam(
-      "previousOwner",
-      ethereum.Value.fromAddress(previousOwner)
-    )
-  )
-  ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
-  )
-
-  return ownershipTransferredEvent
-}
-
-export function createTreasuryFundedEvent(
-  orgId: BigInt,
+export function createPayoutMadeEvent(
+  employeeAddress: Address,
   amount: BigInt
-): TreasuryFunded {
-  let treasuryFundedEvent = changetype<TreasuryFunded>(newMockEvent())
+): PayoutMade {
+  let payoutMadeEvent = changetype<PayoutMade>(newMockEvent())
 
-  treasuryFundedEvent.parameters = new Array()
+  payoutMadeEvent.parameters = new Array()
 
-  treasuryFundedEvent.parameters.push(
-    new ethereum.EventParam("orgId", ethereum.Value.fromUnsignedBigInt(orgId))
+  payoutMadeEvent.parameters.push(
+    new ethereum.EventParam(
+      "employeeAddress",
+      ethereum.Value.fromAddress(employeeAddress)
+    )
   )
-  treasuryFundedEvent.parameters.push(
+  payoutMadeEvent.parameters.push(
     new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
   )
 
-  return treasuryFundedEvent
+  return payoutMadeEvent
 }

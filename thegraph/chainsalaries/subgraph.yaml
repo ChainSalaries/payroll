@@ -8,37 +8,34 @@ dataSources:
     name: Contract
     network: base-sepolia
     source:
-      address: "0x7b8bba0CE695b77ab104ad3E4Fea0A4a88b8B4f3"
+      address: "0xa11548dEE3C0c753FcDaA20a1eb3aD4b9fEeFcD7"
       abi: Contract
-      startBlock: 12559662
+      startBlock: 12570137
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
+        - CompanyAdded
+        - CompanyFunded
+        - DaysWorkedUpdated
         - EmployeeAdded
-        - EmployeePaid
         - EmployeeVerified
-        - LatestPayReceivedSetBack
-        - OrganizationAdded
-        - OwnershipTransferred
-        - TreasuryFunded
+        - PayoutMade
       abis:
         - name: Contract
           file: ./abis/Contract.json
       eventHandlers:
-        - event: EmployeeAdded(address,address,uint256,string,uint256)
+        - event: CompanyAdded(indexed address,string)
+          handler: handleCompanyAdded
+        - event: CompanyFunded(indexed address,uint256)
+          handler: handleCompanyFunded
+        - event: DaysWorkedUpdated(indexed address,uint256)
+          handler: handleDaysWorkedUpdated
+        - event: EmployeeAdded(indexed address,indexed address,uint256,string)
           handler: handleEmployeeAdded
-        - event: EmployeePaid(address,uint256,uint256)
-          handler: handleEmployeePaid
-        - event: EmployeeVerified(address,address)
+        - event: EmployeeVerified(indexed address)
           handler: handleEmployeeVerified
-        - event: LatestPayReceivedSetBack(address,uint256)
-          handler: handleLatestPayReceivedSetBack
-        - event: OrganizationAdded(uint256,address,string)
-          handler: handleOrganizationAdded
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: TreasuryFunded(uint256,uint256)
-          handler: handleTreasuryFunded
+        - event: PayoutMade(indexed address,uint256)
+          handler: handlePayoutMade
       file: ./src/contract.ts

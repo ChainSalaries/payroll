@@ -1,50 +1,80 @@
 [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
         "internalType": "address",
-        "name": "owner",
+        "name": "companyAddress",
         "type": "address"
-      }
-    ],
-    "name": "OwnableInvalidOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "indexed": false,
+        "internalType": "string",
+        "name": "companyName",
+        "type": "string"
       }
     ],
-    "name": "OwnableUnauthorizedAccount",
-    "type": "error"
+    "name": "CompanyAdded",
+    "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "companyAccount",
+        "name": "companyAddress",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "dailySalaryWei",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "CompanyFunded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "employeeAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "daysWorked",
+        "type": "uint256"
+      }
+    ],
+    "name": "DaysWorkedUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "employeeAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "companyAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailyWageWei",
         "type": "uint256"
       },
       {
@@ -52,12 +82,6 @@
         "internalType": "string",
         "name": "activity",
         "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "startMoment",
-        "type": "uint256"
       }
     ],
     "name": "EmployeeAdded",
@@ -67,40 +91,9 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "latestPayReceived",
-        "type": "uint256"
-      }
-    ],
-    "name": "EmployeePaid",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "companyAccount",
+        "name": "employeeAddress",
         "type": "address"
       }
     ],
@@ -111,73 +104,10 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "hoursBack",
-        "type": "uint256"
-      }
-    ],
-    "name": "LatestPayReceivedSetBack",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "orgId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "orgAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "orgName",
-        "type": "string"
-      }
-    ],
-    "name": "OrganizationAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
-        "name": "previousOwner",
+        "name": "employeeAddress",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "orgId",
-        "type": "uint256"
       },
       {
         "indexed": false,
@@ -186,34 +116,38 @@
         "type": "uint256"
       }
     ],
-    "name": "TreasuryFunded",
+    "name": "PayoutMade",
     "type": "event"
   },
   {
-    "stateMutability": "payable",
-    "type": "fallback"
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_companyName",
+        "type": "string"
+      }
+    ],
+    "name": "addCompany",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "address",
-        "name": "employeeAccount",
+        "name": "_employeeAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "dailySalaryWei",
+        "name": "_dailyWageWei",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "activity",
+        "name": "_activity",
         "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startMoment",
-        "type": "uint256"
       }
     ],
     "name": "addEmployee",
@@ -225,52 +159,25 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_orgAddress",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "companies",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "companyAddress",
         "type": "address"
       },
       {
         "internalType": "string",
-        "name": "_orgName",
+        "name": "companyName",
         "type": "string"
-      }
-    ],
-    "name": "addOrganization",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      }
-    ],
-    "name": "calculateOpenBalance",
-    "outputs": [
+      },
       {
         "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      }
-    ],
-    "name": "calculateTimeDiff",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
+        "name": "treasury",
         "type": "uint256"
       }
     ],
@@ -289,59 +196,79 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "employeeAccount",
+        "name": "employeeAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "companyAccount",
+        "name": "companyAddress",
         "type": "address"
       },
       {
-        "internalType": "string",
-        "name": "companyName",
-        "type": "string"
-      },
-      {
-        "internalType": "uint8",
-        "name": "worldcoinVerified",
-        "type": "uint8"
+        "internalType": "uint256",
+        "name": "dailyWageWei",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "dailySalaryWei",
+        "name": "daysWorked",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "worldidverified",
+        "type": "uint8"
       },
       {
         "internalType": "string",
         "name": "activity",
         "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startMoment",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "latestPayReceived",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_orgId",
-        "type": "uint256"
-      }
-    ],
-    "name": "fundOrganizationTreasury",
+    "inputs": [],
+    "name": "fundCompany",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "companyAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getCompany",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "companyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "companyName",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "treasury",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SimplePayroll.Company",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -355,222 +282,39 @@
     "name": "getEmployee",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "companyAccount",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "companyName",
-        "type": "string"
-      },
-      {
-        "internalType": "uint8",
-        "name": "worldcoinVerified",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "dailySalaryWei",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "activity",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startMoment",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "latestPayReceived",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "openBalance",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "employeeAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getEmployeeHistory",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "orgId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getEmployeesByOrganization",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "orgAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getFullOrganizationDetails",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      },
-      {
         "components": [
           {
             "internalType": "address",
-            "name": "employeeAccount",
+            "name": "employeeAddress",
             "type": "address"
           },
           {
             "internalType": "address",
-            "name": "companyAccount",
+            "name": "companyAddress",
             "type": "address"
           },
           {
-            "internalType": "string",
-            "name": "companyName",
-            "type": "string"
-          },
-          {
-            "internalType": "uint8",
-            "name": "worldcoinVerified",
-            "type": "uint8"
+            "internalType": "uint256",
+            "name": "dailyWageWei",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "dailySalaryWei",
+            "name": "daysWorked",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldidverified",
+            "type": "uint8"
           },
           {
             "internalType": "string",
             "name": "activity",
             "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startMoment",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "latestPayReceived",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "paymentHistory",
-            "type": "uint256[]"
           }
         ],
-        "internalType": "struct Payroll.Employee[]",
-        "name": "employeesList",
-        "type": "tuple[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "openBalances",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "orgAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getOrganization",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "orgAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "orgId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "orgName",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "orgTreasury",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "employeeCount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address[]",
-            "name": "employeeAddresses",
-            "type": "address[]"
-          }
-        ],
-        "internalType": "struct Payroll.Organization",
+        "internalType": "struct SimplePayroll.Employee",
         "name": "",
         "type": "tuple"
       }
@@ -579,118 +323,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getTotalEmployees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextOrgId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_employeeAddress",
         "type": "address"
       }
     ],
-    "name": "organizationIds",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "organizations",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "orgAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "orgId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "orgName",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "orgTreasury",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "employeeCount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "employeeAccount",
-        "type": "address"
-      }
-    ],
-    "name": "payOpenBalance",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
+    "name": "payout",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -699,42 +339,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "employeeAccount",
+        "name": "_employeeAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "hoursBack",
+        "name": "_daysWorked",
         "type": "uint256"
       }
     ],
-    "name": "setLatestPayReceivedBack",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalEmployees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
+    "name": "updateDaysWorked",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

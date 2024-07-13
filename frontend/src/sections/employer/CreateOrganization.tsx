@@ -15,7 +15,7 @@ export default function CreateOrganization({ address }: Props) {
 
   const onSubmit = async () => {
     if (!!orgName) {
-      await createOrg(address, orgName)
+      await createOrg(orgName)
       console.log('create org with name', orgName)
     }
   }

@@ -5,12 +5,12 @@ import { config } from '@/config'
 import { Address } from '@/state/types'
 import { PAYROLL_CONTRACT_ADDRESS } from '@/config/constants'
 
-export async function createOrg(address: Address, name: string) {
+export async function createOrg(name: string) {
   const result = await writeContract(config, {
     chainId: baseSepolia.id,
     abi: payrollAbi,
     functionName: 'addCompany',
-    args: [address, name],
+    args: [name],
     address: PAYROLL_CONTRACT_ADDRESS,
   })
   console.log('add new org', result)
@@ -22,7 +22,7 @@ export async function addNewEmployee(address: Address, salary: number, activity:
     chainId: baseSepolia.id,
     abi: payrollAbi,
     functionName: 'addEmployee',
-    args: [address, BigInt(salary), activity, BigInt(Date.now())],
+    args: [address, BigInt(salary), activity],
     address: PAYROLL_CONTRACT_ADDRESS,
   })
   console.log('add new Employee transaction', result)
