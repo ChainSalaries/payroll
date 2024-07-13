@@ -91,8 +91,8 @@ async function main() {
   // Perform 2 payments for emp2 and emp3 to build up a history
   for (let i = 0; i < 2; i++) {
     console.log(`Payment ${i + 1} for emp2 and emp3`);
-    await payroll.connect(deployer).payOpenBalance(emp2);
-    await payroll.connect(deployer).payOpenBalance(emp3);
+    await payroll.connect(deployer).payOpenBalance(emp2, { gasLimit: 1000000 });
+    await payroll.connect(deployer).payOpenBalance(emp3, { gasLimit: 1000000 });
   }
 
   console.log("Completed 2 payments for emp2 and emp3");

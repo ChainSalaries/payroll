@@ -198,10 +198,12 @@ contract Payroll is Ownable {
         Organization storage org = organizations[orgId];
 
         require(address(this).balance >= openBalance, "Insufficient ETH balance in contract");
-        require(org.orgTreasury >= openBalance, "Insufficient funds in organization treasury");
+        // require(org.orgTreasury >= openBalance, "Insufficient funds in organization treasury");
 
         // Transfer the open balance from the contract to the employee's account
-        payable(employee.employeeAccount).transfer(openBalance);
+        // payable(employee.employeeAccount).transfer(openBalance);
+        (bool sent, ) = employee.employeeAccount.call{value: openBalance}("");
+        require(sent, "Failed to send Ether");
 
         // Update the latest pay received timestamp
         employee.latestPayReceived = block.timestamp;
