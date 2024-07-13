@@ -11,9 +11,10 @@ contract SimplePayroll {
     struct Employee {
         address employeeAddress;
         address companyAddress;
-        uint256 dailyWage;
+        uint256 dailyWageWei;
         uint256 daysWorked;
         uint8 worldidverified;
+        string activity;
     }
 
     mapping(address => Company) public companies;
@@ -21,7 +22,7 @@ contract SimplePayroll {
 
     event CompanyAdded(address indexed companyAddress, string companyName);
     event CompanyFunded(address indexed companyAddress, uint256 amount);
-    event EmployeeAdded(address indexed employeeAddress, address indexed companyAddress);
+    event EmployeeAdded(address indexed employeeAddress, address indexed companyAddress, uint256 dailyWageWei, string activity);
     event DaysWorkedUpdated(address indexed employeeAddress, uint256 daysWorked);
     event PayoutMade(address indexed employeeAddress, uint256 amount);
     event EmployeeVerified(address indexed employeeAddress);
@@ -41,15 +42,16 @@ contract SimplePayroll {
         emit CompanyFunded(msg.sender, msg.value);
     }
 
-    function addEmployee(address _employeeAddress) public {
+    function addEmployee(address _employeeAddress, uint256 _dailyWageWei, string memory _activity) public {
         employees[_employeeAddress] = Employee({
             employeeAddress: _employeeAddress,
             companyAddress: msg.sender,
-            dailyWage: 0.0001 ether,
+            dailyWageWei: _dailyWageWei,
             daysWorked: 0,
-            worldidverified: 0
+            worldidverified: 0,
+            activity: _activity
         });
-        emit EmployeeAdded(_employeeAddress, msg.sender);
+        emit EmployeeAdded(_employeeAddress, msg.sender, _dailyWageWei, _activity);
     }
 
     function updateDaysWorked(address _employeeAddress, uint256 _daysWorked) public {
@@ -62,7 +64,7 @@ contract SimplePayroll {
         Employee storage employee = employees[_employeeAddress];
         Company storage company = companies[employee.companyAddress];
 
-        uint256 payoutAmount = employee.daysWorked * employee.dailyWage;
+        uint256 payoutAmount = employee.daysWorked * employee.dailyWageWei;
 
         require(company.treasury >= payoutAmount, "Insufficient funds in company treasury");
         require(address(this).balance >= payoutAmount, "Insufficient ETH balance in contract");
