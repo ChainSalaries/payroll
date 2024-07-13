@@ -66,9 +66,9 @@ contract Payroll is Ownable {
         nextOrgId++;
     }
 
-    function getOrganization() public view returns (Organization memory) {
-        uint256 orgId = organizationIds[msg.sender];
-        require(orgId != 0, "Organization does not exist 1");
+    function getOrganization(address orgAddress) public view returns (Organization memory) {
+        uint256 orgId = organizationIds[orgAddress];
+        require(orgId != 0, "Organization does not exist");
         return organizations[orgId];
     }
 
@@ -150,11 +150,11 @@ contract Payroll is Ownable {
     }
 
     function setStartMomentBack(address employeeAccount, uint256 daysBack) public onlyOwner {
-    Employee storage employee = employees[employeeAccount];
-    require(employee.employeeAccount != address(0), "Employee does not exist");
-    
-    uint256 secondsBack = daysBack * 1 days;
-    employee.startMoment -= secondsBack;
+        Employee storage employee = employees[employeeAccount];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+
+        uint256 secondsBack = daysBack * 1 days;
+        employee.startMoment -= secondsBack;
     }
 
     function setLatestPayReceivedBack(address employeeAccount, uint256 daysBack) public onlyOwner {
@@ -163,5 +163,11 @@ contract Payroll is Ownable {
 
         uint256 secondsBack = daysBack * 1 days;
         employee.latestPayReceived -= secondsBack;
+    }
+
+    function getEmployee(address employeeAddress) public view returns (Employee memory) {
+        Employee memory employee = employees[employeeAddress];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+        return employee;
     }
 }
