@@ -27,7 +27,7 @@ type Props = {
 export default function AddEmployeeDialog({ organization, dialog }: Props) {
   const [employeeAddress, setEmployeeAddress] = useState<string>('')
   const [addessOrEns, setAddessOrEns] = useState<string>('')
-  const [salary, setSalary] = useState<number>(0)
+  const [salary, setSalary] = useState<number>()
   const [activity, setActivity] = useState<string>('')
 
   const [error, setError] = useState(false)
@@ -104,7 +104,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
             value={salary}
             onChange={(e) => setSalary(Number(e.target.value))}
             InputProps={{
-              endAdornment: <InputAdornment position="end">USDC</InputAdornment>,
+              endAdornment: <InputAdornment position="end">WEI</InputAdornment>,
             }}
           />
           <TextField

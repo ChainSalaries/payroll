@@ -1,7 +1,66 @@
+type EmployeeAdded @entity(immutable: true) {
+  id: Bytes!
+  employeeAccount: Bytes! # address
+  companyAccount: Bytes! # address
+  dailySalaryWei: BigInt! # uint256
+  activity: String! # string
+  startMoment: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type EmployeePaid @entity(immutable: true) {
+  id: Bytes!
+  employeeAccount: Bytes! # address
+  amount: BigInt! # uint256
+  latestPayReceived: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type EmployeeVerified @entity(immutable: true) {
+  id: Bytes!
+  employeeAccount: Bytes! # address
+  companyAccount: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LatestPayReceivedSetBack @entity(immutable: true) {
+  id: Bytes!
+  employeeAccount: Bytes! # address
+  hoursBack: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type OrganizationAdded @entity(immutable: true) {
+  id: Bytes!
+  orgId: BigInt! # uint256
+  orgAddress: Bytes! # address
+  orgName: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 type OwnershipTransferred @entity(immutable: true) {
   id: Bytes!
   previousOwner: Bytes! # address
   newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TreasuryFunded @entity(immutable: true) {
+  id: Bytes!
+  orgId: BigInt! # uint256
+  amount: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

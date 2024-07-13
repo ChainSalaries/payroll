@@ -13,7 +13,7 @@ export async function fetchEmployees(employeeAddresses: readonly `0x${string}`[]
       abi: payrollAbi,
       functionName: 'getEmployee',
       args: [employeeAddress],
-      address: '0xAEf0EF43a5df13AC8c4Ce552f9ca3dB4FDd72ee6',
+      address: PAYROLL_CONTRACT_ADDRESS,
     })),
   })
   console.log('fetchEmployees', results)

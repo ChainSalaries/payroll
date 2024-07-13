@@ -1,12 +1,6 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "usdcAddress",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -36,6 +30,131 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employeeAccount",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "companyAccount",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "dailySalaryWei",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "activity",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startMoment",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmployeeAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employeeAccount",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "latestPayReceived",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmployeePaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employeeAccount",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "companyAccount",
+        "type": "address"
+      }
+    ],
+    "name": "EmployeeVerified",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employeeAccount",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "hoursBack",
+        "type": "uint256"
+      }
+    ],
+    "name": "LatestPayReceivedSetBack",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "orgId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "orgAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "orgName",
+        "type": "string"
+      }
+    ],
+    "name": "OrganizationAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -52,6 +171,25 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "orgId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TreasuryFunded",
+    "type": "event"
+  },
+  {
     "stateMutability": "payable",
     "type": "fallback"
   },
@@ -64,7 +202,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "dailySalaryUSDC",
+        "name": "dailySalaryWei",
         "type": "uint256"
       },
       {
@@ -171,7 +309,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "dailySalaryUSDC",
+        "name": "dailySalaryWei",
         "type": "uint256"
       },
       {
@@ -199,16 +337,11 @@
         "internalType": "uint256",
         "name": "_orgId",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       }
     ],
     "name": "fundOrganizationTreasury",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -243,7 +376,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "dailySalaryUSDC",
+        "name": "dailySalaryWei",
         "type": "uint256"
       },
       {
@@ -265,6 +398,25 @@
         "internalType": "uint256",
         "name": "openBalance",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "employeeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getEmployeeHistory",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -338,7 +490,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "dailySalaryUSDC",
+            "name": "dailySalaryWei",
             "type": "uint256"
           },
           {
@@ -355,6 +507,11 @@
             "internalType": "uint256",
             "name": "latestPayReceived",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "paymentHistory",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct Payroll.Employee[]",
@@ -580,19 +737,6 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "usdc",
-    "outputs": [
-      {
-        "internalType": "contract IUSDC",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

@@ -61,9 +61,9 @@ export default function Header() {
               variant="h4"
               sx={{ display: { xs: 'none', md: 'block' }, textTransform: 'capitalize' }}
             >
-              {organization?.name}
+              {organization?.orgName}
             </Typography>
-            Balance: {organization?.balance} USDC
+            Balance: {organization?.orgTreasury}
           </Stack>
         </Container>
         <Container sx={{ height: 1, display: 'flex', alignItems: 'center' }}>
