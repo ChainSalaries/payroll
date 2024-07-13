@@ -27,12 +27,20 @@ export default function EmployeeInformation({ address }: Props) {
   }
   return (
     <div>
-
+      <ul>
+        <li>address: {employeeInfo.address}</li>
+        <li>orgAddress: {employeeInfo.orgAddress}</li>
+        <li>verified: {employeeInfo.verified ? "true" : "false"}</li>
+        <li>activity: {employeeInfo.activity}</li>
+        <li>startMoment: {employeeInfo.startMoment}</li>
+        <li>latestPayReceived: {employeeInfo.latestPayReceived}</li>
+        <li>openBalance: {employeeInfo.openBalance}</li>
+      </ul>
 
       <Stack sx={{ width: '60%' }}>
-        <div>
-        </div>test
-
+        {!employeeInfo.verified && <WorldID
+          address={address}
+        />}
       </Stack>
 
 

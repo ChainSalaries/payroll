@@ -28,9 +28,6 @@ export default function EmployeeSection() {
           Welcome
         </Typography>
 
-
-
-
         <EmployeeInformation
           address={address}
         />

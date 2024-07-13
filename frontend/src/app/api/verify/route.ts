@@ -7,6 +7,7 @@ export const POST = async (req: NextRequest) => {
     const app_id = "app_staging_d159dd1d864c0bd25f6341f2f4a9cbc5"
     const action = "employee-verification"
     const verifyRes = (await verifyCloudProof(proof, app_id, action, signal)) as IVerifyResponse
+    console.log(verifyRes)
     if (verifyRes.success) {
         // This is where you should perform backend actions if the verification succeeds
         // Such as, setting a user as "verified" in a database
