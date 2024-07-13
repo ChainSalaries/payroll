@@ -100,11 +100,17 @@ contract Payroll is Ownable {
             activity: activity,
             startMoment: startMoment,
             latestPayReceived: startMoment
-        });
+        });        
 
         org.employeeAddresses.push(employeeAccount);
         org.employeeCount++;
         totalEmployees++;
+    }
+
+    function getEmployee(address employeeAddress) public view returns (Employee memory) {
+        Employee memory employee = employees[employeeAddress];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+        return employee;
     }
 
     function getTotalEmployees() public view returns (uint256) {
@@ -163,11 +169,5 @@ contract Payroll is Ownable {
 
         uint256 secondsBack = daysBack * 1 days;
         employee.latestPayReceived -= secondsBack;
-    }
-
-    function getEmployee(address employeeAddress) public view returns (Employee memory) {
-        Employee memory employee = employees[employeeAddress];
-        require(employee.employeeAccount != address(0), "Employee does not exist");
-        return employee;
     }
 }
