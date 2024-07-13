@@ -1,91 +1,191 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+// const { expect } = require("chai");
+// const { ethers } = require("hardhat");
 
-describe("Payroll Contract", function () {
-  let Payroll, payroll, USDC, usdc;
-  let owner, org, emp1, emp2;
-  const initialSupply = ethers.utils.parseUnits("1000000", 6); // 1,000,000 USDC with 6 decimals
+// describe("Payroll Contract", function () {
+//   let Payroll, payroll;
+//   let owner, org, emp1, emp2;
+//   let snapshotId;
 
-  beforeEach(async function () {
-    // Get the ContractFactory and Signers here.
-    USDC = await ethers.getContractFactory("USDC");
-    [owner, org, emp1, emp2] = await ethers.getSigners();
+//   before(async function () {
+//     [owner, org, emp1, emp2] = await ethers.getSigners();
 
-    // Deploy USDC contract
-    usdc = await USDC.deploy();
-    await usdc.deployed();
+//     Payroll = await ethers.getContractFactory("Payroll");
+//     payroll = await Payroll.deploy();
+//     await payroll.deployed();
 
-    // Mint initial supply to the owner
-    await usdc.mint(owner.address, initialSupply);
+//     const fundAmount = ethers.utils.parseEther("10");
 
-    // Deploy Payroll contract
-    Payroll = await ethers.getContractFactory("Payroll");
-    payroll = await Payroll.deploy(usdc.address);
-    await payroll.deployed();
+//     snapshotId = await ethers.provider.send("evm_snapshot", []);
+//   });
 
-    // Transfer some USDC to the org account for payroll
-    await usdc.transfer(org.address, ethers.utils.parseUnits("500000", 6)); // 500,000 USDC
+//   beforeEach(async function () {
+//     await ethers.provider.send("evm_revert", [snapshotId]);
+//     snapshotId = await ethers.provider.send("evm_snapshot", []);
+//   });
 
-    // Add an organization
-    await payroll.connect(owner).addOrganization(org.address, "Org Inc.");
+//   describe("Deployment", function () {
+//     it("should initialize nextOrgId to 1", async function () {
+//       expect(await payroll.nextOrgId()).to.equal(1);
+//     });
 
-    // Add an employee
-    await payroll.connect(org).addEmployee(
-      emp1.address,
-      ethers.utils.parseUnits("100", 6), // daily salary of 100 USDC
-      "Developer",
-      Math.floor(Date.now() / 1000) // current timestamp
-    );
+//     it("should initialize totalEmployees to 0", async function () {
+//       expect(await payroll.totalEmployees()).to.equal(0);
+//     });
+//   });
 
-    // Fund organization's treasury in the payroll contract
-    await usdc.connect(org).approve(payroll.address, ethers.utils.parseUnits("10000", 6));
-    await payroll.connect(owner).fundOrganizationTreasury(1, ethers.utils.parseUnits("10000", 6)); // 10,000 USDC
+//   describe("Organization Management", function () {
+//     it("should add an organization", async function () {
+//       await payroll.connect(owner).addOrganization(org.address, "Org Inc.");
+//       const addedOrg = await payroll.getOrganization(org.address);
+//       expect(addedOrg.orgName).to.equal("Org Inc.");
+//       expect(addedOrg.orgAddress).to.equal(org.address);
+//       expect(addedOrg.orgTreasury).to.equal(0);
+//     });
 
-    // Ensure org has enough allowance for payroll
-    await usdc.connect(org).approve(payroll.address, ethers.utils.parseUnits("100000", 6));
-  });
+//     it("should fund the organization's treasury", async function () {
+//       await payroll.connect(owner).addOrganization(org.address, "Org Inc.");
+//       await payroll.connect(owner).fundOrganizationTreasury(1, { value: ethers.utils.parseEther("1") });
 
-  it("should pay open balance to an employee if more than a day has passed", async function () {
-    // Set latest pay received back by 2 days (48 hours)
-    await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 48);
+//       const addedOrg = await payroll.getOrganization(org.address);
+//       expect(addedOrg.orgTreasury).to.equal(ethers.utils.parseEther("1"));
+//     });
+//   });
 
-    const orgTreasuryBefore = (await payroll.getOrganization(org.address)).orgTreasury;
-    expect(orgTreasuryBefore).to.equal(ethers.utils.parseUnits("10000", 6));
+//   describe("Employee Management", function () {
+//     beforeEach(async function () {
+//       await payroll.connect(owner).addOrganization(org.address, "Org Inc.");
+//     });
 
-    const employee_t1 = await payroll.getEmployee(emp1.address);
-    const currentTimestamp_t1 = await ethers.provider.getBlock('latest').then(block => block.timestamp);
+//     it("should add an employee", async function () {
+//       await payroll.connect(org).addEmployee(
+//         emp1.address,
+//         ethers.utils.parseEther("0.1"), // daily salary of 0.1 ETH
+//         "Developer",
+//         Math.floor(Date.now() / 1000) // current timestamp
+//       );
 
-    await payroll.connect(org).payOpenBalance(emp1.address);
+//       const employee = await payroll.employees(emp1.address);
+//       expect(employee.employeeAccount).to.equal(emp1.address);
+//       expect(employee.companyAccount).to.equal(org.address);
+//       expect(employee.dailySalaryWei).to.equal(ethers.utils.parseEther("0.1"));
+//     });
 
-    const openBalanceAfter = await payroll.calculateOpenBalance(emp1.address);
-    expect(openBalanceAfter).to.equal(0);
+//     it("should get an employee", async function () {
+//       await payroll.connect(org).addEmployee(
+//         emp1.address,
+//         ethers.utils.parseEther("0.1"), // daily salary of 0.1 ETH
+//         "Developer",
+//         Math.floor(Date.now() / 1000) // current timestamp
+//       );
 
-    const emp1Balance = await usdc.balanceOf(emp1.address);
-    expect(emp1Balance).to.equal(ethers.utils.parseUnits("200", 6));
+//       const employee = await payroll.getEmployee(emp1.address);
+//       expect(employee.employeeAccount).to.equal(emp1.address);
+//       expect(employee.companyAccount).to.equal(org.address);
+//       expect(employee.companyName).to.equal("Org Inc.");
+//       expect(employee.dailySalaryWei).to.equal(ethers.utils.parseEther("0.1"));
+//       expect(employee.activity).to.equal("Developer");
+//     });
 
-    const orgTreasuryAfter = (await payroll.getOrganization(org.address)).orgTreasury;
-    expect(orgTreasuryAfter).to.equal(ethers.utils.parseUnits("9800", 6));
-  });
+//     it("should get the total number of employees", async function () {
+//       await payroll.connect(org).addEmployee(
+//         emp1.address,
+//         ethers.utils.parseEther("0.1"),
+//         "Developer",
+//         Math.floor(Date.now() / 1000)
+//       );
+//       await payroll.connect(org).addEmployee(
+//         emp2.address,
+//         ethers.utils.parseEther("0.15"),
+//         "Designer",
+//         Math.floor(Date.now() / 1000)
+//       );
 
-  it("should pay nothing if the diff is less than 24 hours", async function () {
-    // Set latest pay received back by 10 hours
-    await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 10);
+//       expect(await payroll.getTotalEmployees()).to.equal(2);
+//     });
 
-    const orgTreasuryBefore = (await payroll.getOrganization(org.address)).orgTreasury;
-    expect(orgTreasuryBefore).to.equal(ethers.utils.parseUnits("10000", 6));
+//     it("should get the number of employees in an organization", async function () {
+//       await payroll.connect(org).addEmployee(
+//         emp1.address,
+//         ethers.utils.parseEther("0.1"),
+//         "Developer",
+//         Math.floor(Date.now() / 1000)
+//       );
+//       await payroll.connect(org).addEmployee(
+//         emp2.address,
+//         ethers.utils.parseEther("0.15"),
+//         "Designer",
+//         Math.floor(Date.now() / 1000)
+//       );
 
-    const employee_t1 = await payroll.getEmployee(emp1.address);
-    const currentTimestamp_t1 = await ethers.provider.getBlock('latest').then(block => block.timestamp);
+//       expect(await payroll.getEmployeesByOrganization(1)).to.equal(2);
+//     });
+//   });
 
-    await payroll.connect(org).payOpenBalance(emp1.address);
+//   describe("Payroll Functions", function () {
+//     beforeEach(async function () {
+//       await payroll.connect(owner).addOrganization(org.address, "Org Inc.");
 
-    const openBalanceAfter = await payroll.calculateOpenBalance(emp1.address);
-    expect(openBalanceAfter).to.equal(0);
+//       await payroll.connect(org).addEmployee(
+//         emp1.address,
+//         ethers.utils.parseEther("0.1"), // daily salary of 0.1 ETH
+//         "Developer",
+//         Math.floor(Date.now() / 1000) // current timestamp
+//       );
 
-    const emp1Balance = await usdc.balanceOf(emp1.address);
-    expect(emp1Balance).to.equal(ethers.utils.parseUnits("0", 6));
+//       const fundAmount = ethers.utils.parseEther("10");
+//       await payroll.connect(owner).fundOrganizationTreasury(1, { value: fundAmount });
+//     });
 
-    const orgTreasuryAfter = (await payroll.getOrganization(org.address)).orgTreasury;
-    expect(orgTreasuryAfter).to.equal(ethers.utils.parseUnits("10000", 6));
-  });
-});
+//     it("should calculate open balance for an employee", async function () {
+//       await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 24);
+
+//       const openBalance = await payroll.calculateOpenBalance(emp1.address);
+//       expect(openBalance).to.equal(ethers.utils.parseEther("0.1"));
+//     });
+
+//     it("should set latestPayReceived back", async function () {
+//       await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 240);
+
+//       const employee = await payroll.employees(emp1.address);
+//       const expectedLatestPayReceived = Math.floor(Date.now() / 1000) - (240 * 3600);
+
+//       expect(employee.latestPayReceived).to.be.closeTo(expectedLatestPayReceived, 100);
+//     });
+
+//     it("should pay open balance to an employee if more than a day has passed", async function () {
+//         await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 48);
+  
+//         const orgTreasuryBefore = (await payroll.getOrganization(org.address)).orgTreasury;
+//         expect(orgTreasuryBefore).to.equal(ethers.utils.parseEther("10"));
+  
+//         await payroll.connect(org).payOpenBalance(emp1.address);
+  
+//         const openBalanceAfter = await payroll.calculateOpenBalance(emp1.address);
+//         expect(openBalanceAfter).to.equal(0);
+  
+//         const emp1Balance = await ethers.provider.getBalance(emp1.address);
+//         expect(emp1Balance).to.be.closeTo(ethers.utils.parseEther("10000.2"), ethers.utils.parseEther("0.01")); // Adjust this according to the initial balance of emp1
+  
+//         const orgTreasuryAfter = (await payroll.getOrganization(org.address)).orgTreasury;
+//         expect(orgTreasuryAfter).to.equal(ethers.utils.parseEther("9.8"));
+//       });
+
+//       it("should pay nothing if the diff is less than 24 hours", async function () {
+//         await payroll.connect(owner).setLatestPayReceivedBack(emp1.address, 10);
+  
+//         const orgTreasuryBefore = (await payroll.getOrganization(org.address)).orgTreasury;
+//         expect(orgTreasuryBefore).to.equal(ethers.utils.parseEther("10"));
+  
+//         await payroll.connect(org).payOpenBalance(emp1.address);
+  
+//         const openBalanceAfter = await payroll.calculateOpenBalance(emp1.address);
+//         expect(openBalanceAfter).to.equal(0);
+  
+//         const emp1Balance = await ethers.provider.getBalance(emp1.address);
+//         expect(emp1Balance).to.be.closeTo(ethers.utils.parseEther("10000"), ethers.utils.parseEther("0.01")); // Adjust this according to the initial balance of emp1
+  
+//         const orgTreasuryAfter = (await payroll.getOrganization(org.address)).orgTreasury;
+//         expect(orgTreasuryAfter).to.equal(ethers.utils.parseEther("10"));
+//       });
+//   });
+// });

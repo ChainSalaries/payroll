@@ -3,21 +3,18 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IUSDC {
-    function balanceOf(address account) external view returns (uint256);
-    function allowance(address owner, address spender) external view returns (uint256);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function approve(address spender, uint256 amount) external returns (bool);
-}
-
 contract Payroll is Ownable {
-    IUSDC public usdc;
     uint256 public nextOrgId;
     uint256 public totalEmployees;
 
-    constructor(address usdcAddress) Ownable(msg.sender) {
-        usdc = IUSDC(usdcAddress);
+    event OrganizationAdded(uint256 orgId, address orgAddress, string orgName);
+    event TreasuryFunded(uint256 orgId, uint256 amount);
+    event EmployeeAdded(address employeeAccount, address companyAccount, uint256 dailySalaryWei, string activity, uint256 startMoment);
+    event EmployeeVerified(address employeeAccount, address companyAccount);
+    event EmployeePaid(address employeeAccount, uint256 amount, uint256 latestPayReceived);
+    event LatestPayReceivedSetBack(address employeeAccount, uint256 hoursBack);
+
+    constructor() Ownable(msg.sender) {
         nextOrgId = 1;
         totalEmployees = 0;
     }
@@ -36,10 +33,11 @@ contract Payroll is Ownable {
         address companyAccount;
         string companyName;
         uint8 worldcoinVerified;
-        uint256 dailySalaryUSDC;
+        uint256 dailySalaryWei;
         string activity;
         uint256 startMoment;
         uint256 latestPayReceived;
+        uint256[] paymentHistory; // Array to collect all transaction IDs of payOpenBalance
     }
 
     mapping(uint256 => Organization) public organizations;
@@ -63,6 +61,7 @@ contract Payroll is Ownable {
             employeeAddresses: new address[](0)
         });
         organizationIds[_orgAddress] = nextOrgId;
+        emit OrganizationAdded(nextOrgId, _orgAddress, _orgName); // Emit event
         nextOrgId++;
     }
 
@@ -72,39 +71,38 @@ contract Payroll is Ownable {
         return organizations[orgId];
     }
 
-    function fundOrganizationTreasury(uint256 _orgId, uint256 amount) public {
+    function fundOrganizationTreasury(uint256 _orgId) public payable {
         Organization storage org = organizations[_orgId];
         require(org.orgAddress != address(0), "Organization does not exist");
-        require(usdc.balanceOf(org.orgAddress) >= amount, "Insufficient USDC balance in organization account");
-
-        usdc.transferFrom(org.orgAddress, address(this), amount);
-        org.orgTreasury += amount;
+        org.orgTreasury += msg.value;
+        emit TreasuryFunded(_orgId, msg.value); // Emit event
     }
 
     function addEmployee(
         address employeeAccount,
-        uint256 dailySalaryUSDC,
+        uint256 dailySalaryWei,
         string memory activity,
         uint256 startMoment
     ) public {
         uint256 orgId = organizationIds[msg.sender];
         Organization storage org = organizations[orgId];
-        require(org.orgAddress == msg.sender, "Only the organization can add an employee");
 
         employees[employeeAccount] = Employee({
             employeeAccount: employeeAccount,
             companyAccount: msg.sender,
             companyName: org.orgName,
             worldcoinVerified: 0, // Default to not verified
-            dailySalaryUSDC: dailySalaryUSDC,
+            dailySalaryWei: dailySalaryWei,
             activity: activity,
             startMoment: startMoment,
-            latestPayReceived: startMoment
-        });        
+            latestPayReceived: startMoment,
+            paymentHistory: new uint256[](0)
+        });
 
         org.employeeAddresses.push(employeeAccount);
         org.employeeCount++;
         totalEmployees++;
+        emit EmployeeAdded(employeeAccount, msg.sender, dailySalaryWei, activity, startMoment); // Emit event
     }
 
     function getEmployee(address employeeAddress) public view returns (
@@ -112,7 +110,7 @@ contract Payroll is Ownable {
         address companyAccount,
         string memory companyName,
         uint8 worldcoinVerified,
-        uint256 dailySalaryUSDC,
+        uint256 dailySalaryWei,
         string memory activity,
         uint256 startMoment,
         uint256 latestPayReceived,
@@ -128,7 +126,7 @@ contract Payroll is Ownable {
             employee.companyAccount,
             employee.companyName,
             employee.worldcoinVerified,
-            employee.dailySalaryUSDC,
+            employee.dailySalaryWei,
             employee.activity,
             employee.startMoment,
             employee.latestPayReceived,
@@ -136,12 +134,19 @@ contract Payroll is Ownable {
         );
     }
 
+    function getEmployeeHistory(address employeeAddress) public view returns (uint256[] memory) {
+        Employee memory employee = employees[employeeAddress];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+
+        return employee.paymentHistory;
+    }
+
     function verifyEmployee(address employeeAccount) public {
         Employee storage employee = employees[employeeAccount];
         require(employee.employeeAccount != address(0), "Employee does not exist");
-        require(employee.companyAccount == msg.sender, "Only the company can verify the employee");
 
         employee.worldcoinVerified = 1;
+        emit EmployeeVerified(employeeAccount, msg.sender); // Emit event
     }
 
     function getTotalEmployees() public view returns (uint256) {
@@ -180,7 +185,7 @@ contract Payroll is Ownable {
             return 0;
         }
 
-        uint256 openBalance = daysElapsed * employee.dailySalaryUSDC;
+        uint256 openBalance = daysElapsed * employee.dailySalaryWei;
         return openBalance;
     }
 
@@ -192,18 +197,22 @@ contract Payroll is Ownable {
         uint256 orgId = organizationIds[employee.companyAccount];
         Organization storage org = organizations[orgId];
 
-        require(usdc.balanceOf(employee.companyAccount) >= openBalance, "Insufficient USDC balance in company account");
-        require(usdc.allowance(employee.companyAccount, address(this)) >= openBalance, "Insufficient allowance for payroll contract");
+        require(address(this).balance >= openBalance, "Insufficient ETH balance in contract");
         require(org.orgTreasury >= openBalance, "Insufficient funds in organization treasury");
 
-        // Transfer the open balance from the company's account to the employee's account
-        usdc.transferFrom(employee.companyAccount, employee.employeeAccount, openBalance);
+        // Transfer the open balance from the contract to the employee's account
+        payable(employee.employeeAccount).transfer(openBalance);
 
         // Update the latest pay received timestamp
         employee.latestPayReceived = block.timestamp;
 
+        // Record the transaction ID in the employee's payment history
+        employee.paymentHistory.push(block.timestamp);
+
         // Deduct the amount from the organization's treasury
         org.orgTreasury -= openBalance;
+
+        emit EmployeePaid(employeeAccount, openBalance, employee.latestPayReceived); // Emit event
     }
 
     function setLatestPayReceivedBack(address employeeAccount, uint256 hoursBack) public {
@@ -212,6 +221,8 @@ contract Payroll is Ownable {
 
         uint256 secondsBack = hoursBack * 1 hours;
         employee.latestPayReceived -= secondsBack;
+
+        emit LatestPayReceivedSetBack(employeeAccount, hoursBack); // Emit event
     }
 
     function getFullOrganizationDetails(address orgAddress) public view returns (
