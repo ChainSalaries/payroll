@@ -10,6 +10,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 // components
 import Iconify from '@/components/iconify'
 import moment from 'moment' // Add this line to import the 'moment' library
+import { useBoolean } from '@/hooks/use-boolean'
+import AddEmployeeDialog from './AddEmployeeDialog'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -98,15 +100,29 @@ type Props = {
 
 export default function OrganizationSection({ organization }: Props) {
   const dispatch = useAppDispatch()
+  const newEmployeeDialog = useBoolean()
 
   return (
-    <Stack sx={{ width: '100%' }}>
-      <Card>
-        <CardHeader title="Employee" sx={{ mb: 2 }} />
-        <Box sx={{ height: 390 }}>
-          <DataGridBasic data={organization.employees} />
+    <>
+      <Stack sx={{ width: '100%' }} spacing={2}>
+        <Box display="flex" alignItems="end">
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ marginLeft: 'auto' }}
+            onClick={newEmployeeDialog.onTrue}
+          >
+            New Employee
+          </Button>
         </Box>
-      </Card>
-    </Stack>
+        <Card>
+          <CardHeader title="Employee" sx={{ mb: 2 }} />
+          <Box sx={{ height: 390 }}>
+            <DataGridBasic data={organization.employees} />
+          </Box>
+        </Card>
+      </Stack>
+      <AddEmployeeDialog organization={organization} dialog={newEmployeeDialog} />
+    </>
   )
 }
