@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/state/hooks'
 import CreateOrganization from '@/sections/employer/CreateOrganization'
 import { Organization } from '@/state/types'
 import OrganizationSection from '@/sections/employer/OrganizationSection'
+import EmployeeSection from '@/sections/employee/EmployeeSection'
 import { setOrganization } from '@/state/app'
 
 export default function Home() {
@@ -50,6 +51,7 @@ export default function Home() {
           {loading && <Typography textAlign={'center'}>Loading...</Typography>}
           {!loading && isEmployer && !org?.name && <CreateOrganization />}
           {!loading && isEmployer && !!org?.name && <OrganizationSection organization={org} />}
+          {!loading && !isEmployer && !isConnecting && !isDisconnected && <EmployeeSection />}
         </Stack>
       </div>
     </MainLayout>
