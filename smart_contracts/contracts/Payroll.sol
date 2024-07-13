@@ -74,7 +74,7 @@ contract Payroll is Ownable {
 
     function fundOrganizationTreasury(uint256 _orgId, uint256 amount) public onlyOwner {
         Organization storage org = organizations[_orgId];
-        require(org.orgAddress != address(0), "Organization does not exist 2");
+        require(org.orgAddress != address(0), "Organization does not exist");
         require(usdc.balanceOf(org.orgAddress) >= amount, "Insufficient USDC balance in organization account");
 
         usdc.transferFrom(org.orgAddress, address(this), amount);
@@ -107,10 +107,41 @@ contract Payroll is Ownable {
         totalEmployees++;
     }
 
-    function getEmployee(address employeeAddress) public view returns (Employee memory) {
+    function getEmployee(address employeeAddress) public view returns (
+        address employeeAccount,
+        address companyAccount,
+        string memory companyName,
+        uint8 worldcoinVerified,
+        uint256 dailySalaryUSDC,
+        string memory activity,
+        uint256 startMoment,
+        uint256 latestPayReceived,
+        uint256 openBalance
+    ) {
         Employee memory employee = employees[employeeAddress];
         require(employee.employeeAccount != address(0), "Employee does not exist");
-        return employee;
+        
+        uint256 calculatedOpenBalance = calculateOpenBalance(employeeAddress);
+        
+        return (
+            employee.employeeAccount,
+            employee.companyAccount,
+            employee.companyName,
+            employee.worldcoinVerified,
+            employee.dailySalaryUSDC,
+            employee.activity,
+            employee.startMoment,
+            employee.latestPayReceived,
+            calculatedOpenBalance
+        );
+    }
+
+    function verifyEmployee(address employeeAccount) public {
+        Employee storage employee = employees[employeeAccount];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+        require(employee.companyAccount == msg.sender, "Only the company can verify the employee");
+
+        employee.worldcoinVerified = 1;
     }
 
     function getTotalEmployees() public view returns (uint256) {
@@ -121,15 +152,35 @@ contract Payroll is Ownable {
         return organizations[orgId].employeeCount;
     }
 
+    function calculateTimeDiff(address employeeAccount) public view returns (uint256) {
+        Employee memory employee = employees[employeeAccount];
+        require(employee.employeeAccount != address(0), "Employee does not exist");
+
+        uint256 currentTime = block.timestamp;
+        uint256 latestPayTime = employee.latestPayReceived;
+
+        uint256 timeDiff = currentTime - latestPayTime;
+
+        return timeDiff;
+    }
+
     function calculateOpenBalance(address employeeAccount) public view returns (uint256) {
         Employee memory employee = employees[employeeAccount];
         require(employee.employeeAccount != address(0), "Employee does not exist");
 
-        uint256 currentTimeInDays = block.timestamp / 1 days;
-        uint256 latestPayInDays = employee.latestPayReceived / 1 days;
+        uint256 currentTime = block.timestamp;
+        uint256 latestPayTime = employee.latestPayReceived;
 
-        uint256 openBalance = (currentTimeInDays - latestPayInDays) * employee.dailySalaryUSDC;
+        if (currentTime <= latestPayTime) {
+            return 0;
+        }
 
+        uint256 daysElapsed = (currentTime - latestPayTime) / 1 days;
+        if (daysElapsed < 1) {
+            return 0;
+        }
+
+        uint256 openBalance = daysElapsed * employee.dailySalaryUSDC;
         return openBalance;
     }
 
@@ -155,19 +206,33 @@ contract Payroll is Ownable {
         org.orgTreasury -= openBalance;
     }
 
-    function setStartMomentBack(address employeeAccount, uint256 daysBack) public onlyOwner {
+    function setLatestPayReceivedBack(address employeeAccount, uint256 hoursBack) public onlyOwner {
         Employee storage employee = employees[employeeAccount];
         require(employee.employeeAccount != address(0), "Employee does not exist");
 
-        uint256 secondsBack = daysBack * 1 days;
-        employee.startMoment -= secondsBack;
+        uint256 secondsBack = hoursBack * 1 hours;
+        employee.latestPayReceived -= secondsBack;
     }
 
-    function setLatestPayReceivedBack(address employeeAccount, uint256 daysBack) public onlyOwner {
-        Employee storage employee = employees[employeeAccount];
-        require(employee.employeeAccount != address(0), "Employee does not exist");
+    function getFullOrganizationDetails(address orgAddress) public view returns (
+        string memory name,
+        uint256 id,
+        uint256 balance,
+        Employee[] memory employeesList,
+        uint256[] memory openBalances
+    ) {
+        uint256 orgId = organizationIds[orgAddress];
+        Organization storage org = organizations[orgId];
+        require(org.orgAddress != address(0), "Organization does not exist");
 
-        uint256 secondsBack = daysBack * 1 days;
-        employee.latestPayReceived -= secondsBack;
+        Employee[] memory employeesArray = new Employee[](org.employeeCount);
+        uint256[] memory openBalancesArray = new uint256[](org.employeeCount);
+        for (uint256 i = 0; i < org.employeeCount; i++) {
+            address employeeAddress = org.employeeAddresses[i];
+            employeesArray[i] = employees[employeeAddress];
+            openBalancesArray[i] = calculateOpenBalance(employeeAddress);
+        }
+
+        return (org.orgName, org.orgId, org.orgTreasury, employeesArray, openBalancesArray);
     }
 }
