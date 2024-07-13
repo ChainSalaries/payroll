@@ -1,0 +1,41 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: SimplePayroll
+    network: base-sepolia
+    source:
+      address: "0xb79137B035F3B6C48Dd599757b1cdbF38fF5CaC6"
+      abi: SimplePayroll
+      startBlock: 12567419
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - CompanyAdded
+        - CompanyFunded
+        - DaysWorkedUpdated
+        - EmployeeAdded
+        - EmployeeVerified
+        - PayoutMade
+      abis:
+        - name: SimplePayroll
+          file: ./abis/SimplePayroll.json
+      eventHandlers:
+        - event: CompanyAdded(indexed address,string)
+          handler: handleCompanyAdded
+        - event: CompanyFunded(indexed address,uint256)
+          handler: handleCompanyFunded
+        - event: DaysWorkedUpdated(indexed address,uint256)
+          handler: handleDaysWorkedUpdated
+        - event: EmployeeAdded(indexed address,indexed address)
+          handler: handleEmployeeAdded
+        - event: EmployeeVerified(indexed address)
+          handler: handleEmployeeVerified
+        - event: PayoutMade(indexed address,uint256)
+          handler: handlePayoutMade
+      file: ./src/simple-payroll.ts
