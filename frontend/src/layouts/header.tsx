@@ -19,6 +19,7 @@ import { HEADER } from '@/config/constants'
 import { useAppSelector } from '@/state/hooks'
 import { selectRole } from '@/state/selectors'
 import { Typography } from '@mui/material'
+import { bgBlur } from '@/theme/css'
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +30,12 @@ export default function Header() {
   const role = useAppSelector(selectRole)
 
   return (
-    <AppBar>
+    <AppBar
+      sx={{
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+      }}
+    >
       <Toolbar
         disableGutters
         sx={{
@@ -42,9 +48,9 @@ export default function Header() {
             duration: theme.transitions.duration.shorter,
           }),
           ...(offsetTop && {
-            // ...bgBlur({
-            //   color: theme.palette.background.default,
-            // }),
+            ...bgBlur({
+              color: theme.palette.background.default,
+            }),
             height: {
               md: HEADER.H_DESKTOP_OFFSET,
             },

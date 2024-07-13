@@ -69,7 +69,7 @@ export function textField(theme: Theme) {
           ...font.value,
           '&::placeholder': {
             opacity: 1,
-            color: color.placeholder,
+            color: '#B7B7B7',
           },
         },
       },

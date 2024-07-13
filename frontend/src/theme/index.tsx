@@ -21,7 +21,7 @@ type Props = {
 }
 
 export default function ThemeProvider({ children }: Props) {
-  const darkModeOption = darkMode('dark')
+  const darkModeOption = darkMode('light')
   const baseOption = useMemo(
     () => ({
       palette: palette('light'),

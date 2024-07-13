@@ -1,7 +1,6 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-
 import { setRole } from '@/state/app'
 import { useAppDispatch } from '@/state/hooks'
 import Box from '@mui/material/Box'

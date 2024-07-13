@@ -1,6 +1,15 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import type { AnyAction, ThunkAction } from '@reduxjs/toolkit'
-import { persistReducer } from 'redux-persist'
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 import appReducer from './app'
@@ -19,6 +28,12 @@ const persistedReducer = persistReducer(persistConfig, combinedReducers)
 
 const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 })
 
 export type RootState = ReturnType<typeof store.getState>
@@ -31,5 +46,5 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   ThunkConfig['extra'],
   AnyAction
 >
-
+export const persistor = persistStore(store)
 export default store
