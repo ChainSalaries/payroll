@@ -2,6 +2,12 @@
 
 import React, { ReactNode } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider as ApolloInterProvider,
+  HttpLink,
+} from '@apollo/client'
 import { config, projectId } from '@/config'
 
 import { createWeb3Modal } from '@web3modal/wagmi/react'
@@ -41,4 +47,15 @@ export function Web3ModalProvider({
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   return <ReduxProvider store={store}>{children}</ReduxProvider>
+}
+
+const client = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.studio.thegraph.com/proxy/83088/chainsalaries/version/latest',
+  }),
+  cache: new InMemoryCache(),
+})
+
+export function ApolloProvider({ children }: { children: ReactNode }) {
+  return <ApolloInterProvider client={client}>{children}</ApolloInterProvider>
 }

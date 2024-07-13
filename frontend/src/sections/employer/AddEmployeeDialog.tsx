@@ -35,6 +35,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
   const requestIdRef = useRef(0)
 
   const onAddEmployee = async () => {
+    if (!employeeAddress || !salary || !activity) return
     await addNewEmployee(employeeAddress as Address, salary, activity)
     dialog.onFalse()
   }

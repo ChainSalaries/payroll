@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import { AppStateProvider, Web3ModalProvider } from '@/context'
+import { ApolloProvider, AppStateProvider, Web3ModalProvider } from '@/context'
 import ThemeProvider from '@/theme'
 import './globals.css'
 
@@ -20,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppStateProvider>
-          <ThemeProvider>
-            <Web3ModalProvider>{children}</Web3ModalProvider>
-          </ThemeProvider>
-        </AppStateProvider>
+        <ApolloProvider>
+          <AppStateProvider>
+            <ThemeProvider>
+              <Web3ModalProvider>{children}</Web3ModalProvider>
+            </ThemeProvider>
+          </AppStateProvider>
+        </ApolloProvider>
       </body>
     </html>
   )

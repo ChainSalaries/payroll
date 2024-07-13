@@ -1,14 +1,10 @@
 import { useAccount, useReadContract, useBalance } from 'wagmi'
 import { baseSepolia } from 'viem/chains'
 import payrollAbi from '@/config/payrollAbi'
-import { readContracts } from '@wagmi/core'
-import { config } from '@/config'
 import { PAYROLL_CONTRACT_ADDRESS } from '@/config/constants'
 import { fetchEmployees } from '@/services/read-services'
 
 const useGetOrganization = (address: `0x${string}`) => {
-  console.log('useGetOrganization', address)
-
   const { data, isLoading, isSuccess, refetch } = useReadContract({
     chainId: baseSepolia.id,
     abi: payrollAbi,

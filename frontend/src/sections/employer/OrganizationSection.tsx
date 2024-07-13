@@ -2,7 +2,8 @@
 
 import { useAppDispatch, useAppSelector } from '@/state/hooks'
 import Box from '@mui/material/Box'
-import { Button, Card, CardHeader, Stack, TextField, Typography } from '@mui/material'
+import { useQuery } from '@apollo/client'
+import { Button, Card, CardHeader, Stack, Typography } from '@mui/material'
 import { Employee, Organization } from '@/state/types'
 // @mui
 import IconButton from '@mui/material/IconButton'
@@ -13,23 +14,26 @@ import moment from 'moment' // Add this line to import the 'moment' library
 import { useBoolean } from '@/hooks/use-boolean'
 import AddEmployeeDialog from './AddEmployeeDialog'
 import useGetOrganization from '@/hooks/use-get-organization'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { setOrganization } from '@/state/app'
 import { fetchEmployees } from '@/services/read-services'
 import { selectOrganization } from '@/state/selectors'
+import OrganizationTimeline from './OrganizationTimeLine'
+import { GET_EMPLOYEES, ORG_ADDED, ORG_FUNDED } from './graph-queries'
+import EnsName from '@/components/ens-name'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
   {
-    field: 'address',
-    headerName: 'ID',
-    width: 120,
-  },
-  {
     field: 'name',
     headerName: 'Name',
     width: 120,
-    editable: true,
+    renderCell: (params) => <EnsName address={params.row.address} />,
+  },
+  {
+    field: 'address',
+    headerName: 'Address',
+    width: 120,
   },
   {
     field: 'activity',
@@ -94,8 +98,7 @@ type DataGridProps = {
   data: Employee[]
 }
 
-export function DataGridBasic({ data }: DataGridProps) {
-  console.log('grid data', data)
+export function EmployeeDataGrid({ data }: DataGridProps) {
   return (
     <DataGrid
       columns={columns}
@@ -116,6 +119,48 @@ export default function OrganizationSection({ address }: Props) {
   const newEmployeeDialog = useBoolean()
   const org = useAppSelector(selectOrganization)
   const { data, refetch } = useGetOrganization(address)
+
+  const { loading: loadingEmployee, data: employeesAdded } = useQuery(GET_EMPLOYEES, {
+    variables: {
+      companyAccount: org?.orgAddress,
+    },
+  })
+  const { data: orgAdded } = useQuery(ORG_ADDED, { variables: { orgId: org?.orgId } })
+  const { data: orgFunded } = useQuery(ORG_FUNDED, { variables: { orgId: org?.orgId } })
+
+  const events = useMemo(() => {
+    const results = []
+    if (orgAdded) {
+      results.push({
+        id: orgAdded.organizationAddeds[0].id,
+        title: 'Organization Created',
+        time: orgAdded.organizationAddeds[0].blockTimestamp,
+        type: 'order1',
+      })
+    }
+    if (orgFunded) {
+      for (const funded of orgFunded.treasuryFundeds) {
+        results.push({
+          id: funded.id,
+          title: 'Organization Funded',
+          time: funded.blockTimestamp,
+          type: 'order2',
+        })
+      }
+    }
+    if (employeesAdded) {
+      for (const employee of employeesAdded.employeeAddeds) {
+        results.push({
+          id: employee.id,
+          title: 'Employee Added',
+          time: employee.blockTimestamp,
+          type: 'order3',
+        })
+      }
+    }
+
+    return results.sort((a, b) => b.time - a.time)
+  }, [employeesAdded, orgAdded, orgFunded])
 
   useEffect(() => {
     if (data) {
@@ -144,22 +189,27 @@ export default function OrganizationSection({ address }: Props) {
   return (
     <>
       <Stack sx={{ width: '100%' }} spacing={2}>
-        <Box display="flex" alignItems="end">
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ marginLeft: 'auto' }}
-            onClick={newEmployeeDialog.onTrue}
-          >
-            New Employee
-          </Button>
-        </Box>
         <Card>
-          <CardHeader title="Employee" sx={{ mb: 2 }} />
+          <CardHeader
+            title="Employee"
+            sx={{ mb: 2 }}
+            action={
+              <Button
+                variant="contained"
+                size="large"
+                sx={{ marginLeft: 'auto' }}
+                onClick={newEmployeeDialog.onTrue}
+              >
+                New Employee
+              </Button>
+            }
+          />
+
           <Box sx={{ height: 390 }}>
-            <DataGridBasic data={org.employees ?? []} />
+            <EmployeeDataGrid data={org.employees ?? []} />
           </Box>
         </Card>
+        <OrganizationTimeline title="Events" subheader="the history" list={events} />
       </Stack>
       <AddEmployeeDialog organization={org} dialog={newEmployeeDialog} />
     </>
