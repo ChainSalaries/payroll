@@ -8,8 +8,10 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 // hooks
 import { ReturnType } from '@/hooks/use-boolean'
-import { Organization } from '@/state/types'
+import { Address, Organization } from '@/state/types'
 import { InputAdornment } from '@mui/material'
+import { useState } from 'react'
+import { addNewEmployee } from '@/services/write-services'
 
 // ----------------------------------------------------------------------
 
@@ -19,6 +21,15 @@ type Props = {
 }
 
 export default function AddEmployeeDialog({ organization, dialog }: Props) {
+  const [employeeAddress, setEmployeeAddress] = useState<string>('')
+  const [salary, setSalary] = useState<number>(0)
+  const [activity, setActivity] = useState<string>('')
+
+  const onAddEmployee = async () => {
+    await addNewEmployee(employeeAddress as Address, salary, activity)
+    dialog.onFalse()
+  }
+
   return (
     <div>
       <Dialog open={dialog.value} onClose={dialog.onFalse}>
@@ -37,6 +48,8 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
             margin="dense"
             variant="outlined"
             label="Wallet Address or ENS"
+            value={employeeAddress}
+            onChange={(e) => setEmployeeAddress(e.target.value)}
           />
           <TextField
             autoFocus
@@ -45,9 +58,21 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
             margin="dense"
             variant="outlined"
             label="Daily salary"
+            value={salary}
+            onChange={(e) => setSalary(Number(e.target.value))}
             InputProps={{
               endAdornment: <InputAdornment position="end">USDC</InputAdornment>,
             }}
+          />
+          <TextField
+            autoFocus
+            fullWidth
+            type="text"
+            margin="dense"
+            variant="outlined"
+            label="Activity"
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
           />
         </DialogContent>
 
@@ -55,7 +80,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
           <Button onClick={dialog.onFalse} variant="outlined" color="inherit">
             Cancel
           </Button>
-          <Button onClick={dialog.onFalse} variant="contained">
+          <Button onClick={onAddEmployee} variant="contained">
             Add
           </Button>
         </DialogActions>

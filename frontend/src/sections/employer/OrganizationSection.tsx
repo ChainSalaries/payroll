@@ -115,7 +115,7 @@ export default function OrganizationSection({ address }: Props) {
   const dispatch = useAppDispatch()
   const newEmployeeDialog = useBoolean()
   const org = useAppSelector(selectOrganization)
-  const { data } = useGetOrganization(address)
+  const { data, refetch } = useGetOrganization(address)
 
   useEffect(() => {
     if (data) {

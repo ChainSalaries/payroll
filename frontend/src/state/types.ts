@@ -39,3 +39,5 @@ export type Organization = {
   employeeCount: number
   employees?: Employee[]
 }
+
+export type Address = `0x${string}`
