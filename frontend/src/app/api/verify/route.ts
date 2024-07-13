@@ -1,37 +1,20 @@
-import { createPublicClient, http } from 'viem'
-import { baseSepolia } from 'viem/chains'
-import fetch from 'node-fetch'
+import { type IVerifyResponse, verifyCloudProof } from '@worldcoin/idkit-core/backend'
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
-    //const { employee, organization, worldID } = await req.json()
-    const worldIdUrl = "https://developer.worldcoin.org"
+export const POST = async (req: NextRequest) => {
+    const body = await req.json()
+    const { proof, signal } = body
+    const app_id = "app_staging_d159dd1d864c0bd25f6341f2f4a9cbc5"
+    const action = "employee-verification"
+    const verifyRes = (await verifyCloudProof(proof, app_id, action, signal)) as IVerifyResponse
+    if (verifyRes.success) {
+        // This is where you should perform backend actions if the verification succeeds
+        // Such as, setting a user as "verified" in a database
+        return NextResponse.json(verifyRes);
+    } else {
+        // This is where you should handle errors from the World ID /verify endpoint. 
+        // Usually these errors are due to a user having already verified.
+        return NextResponse.json(verifyRes);
+    }
+};
 
-    const response = await fetch(worldIdUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            nullifier_hash: '0x2bf8406809dcefb1486dadc96c0a897db9bab002053054cf64272db512c6fbd8',
-            merkle_root: '0x2264a66d162d7893e12ea8e3c072c51e785bc085ad655f64c10c1a61e00f0bc2',
-            proof: '0x1aa8b8f3b2d2de5ff452c0e1a83e29d6bf46fb83ef35dc5957121ff3d3698a1119090fb',
-            verification_level: 'orb',
-            action: 'my_action',
-            signal_hash: '0x00c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a4',
-        }),
-    })
-
-    // const client = createPublicClient({
-    //     chain: baseSepolia,
-    //     transport: http(),
-    // })
-
-    // // 3. Consume an action!
-    // const blockNumber = await client.getBlockNumber()
-
-    // const data = {
-    //     "block": blockNumber.toString()
-    // }
-
-    return Response.json(response)
-}
