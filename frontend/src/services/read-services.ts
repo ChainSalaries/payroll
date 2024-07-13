@@ -1,9 +1,10 @@
 import { useAccount, useReadContract, useBalance } from 'wagmi'
 import { baseSepolia } from 'viem/chains'
 import payrollAbi from '@/config/payrollAbi'
-import { readContracts } from '@wagmi/core'
+import { readContracts, readContract } from '@wagmi/core'
 import { config } from '@/config'
 import { Employee } from '@/state/types'
+import { PAYROLL_CONTRACT_ADDRESS } from '@/config/constants'
 
 export async function fetchEmployees(employeeAddresses: readonly `0x${string}`[]) {
   const results = await readContracts(config, {
@@ -33,4 +34,28 @@ export async function fetchEmployees(employeeAddresses: readonly `0x${string}`[]
         openBalance: Number(r[8]),
       } as Employee
     })
+}
+
+export async function fetchEmployee(address: `0x${string}`) {
+  console.log('fetch', address)
+
+  const result = await readContract(config, {
+    chainId: baseSepolia.id,
+    abi: payrollAbi,
+    functionName: 'getEmployee',
+    args: [address],
+    address: PAYROLL_CONTRACT_ADDRESS,
+  })
+
+  console.log('fetchEmployee', result)
+  return {
+    address: result[0],
+    orgAddress: result[1],
+    verified: Boolean(result[3]),
+    salary: Number(result[4]),
+    activity: result[5],
+    startMoment: Number(result[6]),
+    latestPayReceived: Number(result[7]),
+    openBalance: Number(result[8]),
+  } as Employee
 }
