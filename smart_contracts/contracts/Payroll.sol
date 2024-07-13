@@ -52,7 +52,7 @@ contract Payroll is Ownable {
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
 
-    function addOrganization(address _orgAddress, string memory _orgName) public onlyOwner {
+    function addOrganization(address _orgAddress, string memory _orgName) public {
         require(organizationIds[_orgAddress] == 0, "Organization already exists");
         organizations[nextOrgId] = Organization({
             orgAddress: _orgAddress,
@@ -72,7 +72,7 @@ contract Payroll is Ownable {
         return organizations[orgId];
     }
 
-    function fundOrganizationTreasury(uint256 _orgId, uint256 amount) public onlyOwner {
+    function fundOrganizationTreasury(uint256 _orgId, uint256 amount) public {
         Organization storage org = organizations[_orgId];
         require(org.orgAddress != address(0), "Organization does not exist");
         require(usdc.balanceOf(org.orgAddress) >= amount, "Insufficient USDC balance in organization account");
@@ -206,7 +206,7 @@ contract Payroll is Ownable {
         org.orgTreasury -= openBalance;
     }
 
-    function setLatestPayReceivedBack(address employeeAccount, uint256 hoursBack) public onlyOwner {
+    function setLatestPayReceivedBack(address employeeAccount, uint256 hoursBack) public {
         Employee storage employee = employees[employeeAccount];
         require(employee.employeeAccount != address(0), "Employee does not exist");
 
