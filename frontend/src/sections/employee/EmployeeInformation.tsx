@@ -19,19 +19,19 @@ type Props = {
   address: `0x${string}`
 }
 export default function EmployeeInformation({ address }: Props) {
-  //const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
-  const employeeInfo = {
-    address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-    orgAddress: '0xabcdef',
-    verified: false,
-    salary: 100000000000,
-    activity: 'Developer',
-    daysWorked: 32,
-  } as Employee
+  const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
+  // const employeeInfo = {
+  //   address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+  //   orgAddress: '0xabcdef',
+  //   verified: false,
+  //   salary: 100000000000,
+  //   activity: 'Developer',
+  //   daysWorked: 32,
+  // } as Employee
 
-  // fetchEmployee(address).then((employee) => {
-  //   //setEmployeeInfo(employee)
-  // })
+  fetchEmployee(address).then((employee) => {
+    setEmployeeInfo(employee)
+  })
 
   if (!employeeInfo) {
     return null
