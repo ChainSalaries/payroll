@@ -9,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent'
 // hooks
 import { ReturnType } from '@/hooks/use-boolean'
 import { Organization } from '@/state/types'
+import { InputAdornment } from '@mui/material'
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,9 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
             margin="dense"
             variant="outlined"
             label="Daily salary"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">USDC</InputAdornment>,
+            }}
           />
         </DialogContent>
 

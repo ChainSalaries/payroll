@@ -37,7 +37,7 @@ export default function Home() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen items-center pt-28 pb-2 px-4">
+      <div className="min-h-screen items-center pt-24 pb-2 px-4">
         <Stack sx={{ width: '100%' }}>
           {isDisconnected && (
             <>
