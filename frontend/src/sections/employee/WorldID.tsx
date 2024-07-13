@@ -1,4 +1,5 @@
 import { IDKitWidget, ISuccessResult, VerificationLevel } from '@worldcoin/idkit'
+import Iconify from '@/components/iconify'
 import { Button } from '@mui/material'
 type Props = {
     address: `0x${string}` | undefined
@@ -34,7 +35,7 @@ export default function VerifyWorldID({ address }: Props) {
                 handleVerify={verifyProof}
                 verification_level={VerificationLevel.Device} // minimum verification level accepted, defaults to "orb"
             >
-                {({ open }) => <Button onClick={open} variant="contained" size="medium">Verify via World ID</Button>}
+                {({ open }) => <Button variant='contained' onClick={open} color='primary'><Iconify icon="tabler:world" />World ID Verification</Button>}
             </IDKitWidget>
         </div>
     )
