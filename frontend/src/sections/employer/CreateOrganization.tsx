@@ -1,12 +1,24 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
-import { useAppDispatch } from '@/state/hooks'
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Stack, TextField, Typography } from '@mui/material'
+import { Address } from '@/state/types'
+import { createOrg } from '@/services/write-services'
 
-export default function CreateOrganization() {
-  const dispatch = useAppDispatch()
+type Props = {
+  address: Address
+}
+
+export default function CreateOrganization({ address }: Props) {
+  const [orgName, setOrgName] = useState<string>('')
+
+  const onSubmit = async () => {
+    if (!!orgName) {
+      await createOrg(address, orgName)
+      console.log('create org with name', orgName)
+    }
+  }
 
   return (
     <div>
@@ -29,6 +41,8 @@ export default function CreateOrganization() {
             autoFocus
             fullWidth
             type="text"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
             margin="dense"
             variant="outlined"
             label="Organization Name"
@@ -40,7 +54,7 @@ export default function CreateOrganization() {
             justifyContent: 'center',
           }}
         >
-          <Button variant="contained" size="large">
+          <Button variant="contained" size="large" onClick={onSubmit}>
             Submit
           </Button>
         </Box>

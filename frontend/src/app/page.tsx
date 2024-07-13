@@ -48,8 +48,12 @@ export default function Home() {
           )}
           {isConnecting && <Typography textAlign={'center'}>Connecting...</Typography>}
           {loading && <Typography textAlign={'center'}>Loading...</Typography>}
-          {!loading && isEmployer && !org?.orgName && <CreateOrganization />}
-          {!loading && isEmployer && !!address && <OrganizationSection address={address} />}
+          {!loading && isEmployer && !!address && !org?.orgName && (
+            <CreateOrganization address={address} />
+          )}
+          {!loading && isEmployer && !!address && !!org?.orgName && (
+            <OrganizationSection address={address} />
+          )}
           {!loading && !isEmployer && !isConnecting && !isDisconnected && <EmployeeSection />}
         </Stack>
       </div>

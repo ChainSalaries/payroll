@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/state/hooks'
 import Box from '@mui/material/Box'
 import { useQuery } from '@apollo/client'
 import { Button, Card, CardHeader, Stack, Typography } from '@mui/material'
-import { Employee, Organization } from '@/state/types'
+import { Address, Employee, Organization } from '@/state/types'
 // @mui
 import IconButton from '@mui/material/IconButton'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
@@ -21,6 +21,7 @@ import { selectOrganization } from '@/state/selectors'
 import OrganizationTimeline from './OrganizationTimeLine'
 import { GET_EMPLOYEES, ORG_ADDED, ORG_FUNDED } from './graph-queries'
 import EnsName from '@/components/ens-name'
+import { formatEther } from 'viem'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -50,6 +51,7 @@ const columns: GridColDef[] = [
     editable: true,
     align: 'center',
     headerAlign: 'center',
+    renderCell: (params) => formatEther(params.row.salary),
   },
   {
     field: 'verified',
@@ -111,7 +113,7 @@ export function EmployeeDataGrid({ data }: DataGridProps) {
 }
 
 type Props = {
-  address: `0x${string}`
+  address: Address
 }
 
 export default function OrganizationSection({ address }: Props) {
@@ -120,7 +122,7 @@ export default function OrganizationSection({ address }: Props) {
   const org = useAppSelector(selectOrganization)
   const { data, refetch } = useGetOrganization(address)
 
-  const { loading: loadingEmployee, data: employeesAdded } = useQuery(GET_EMPLOYEES, {
+  const { data: employeesAdded } = useQuery(GET_EMPLOYEES, {
     variables: {
       companyAccount: org?.orgAddress,
     },
