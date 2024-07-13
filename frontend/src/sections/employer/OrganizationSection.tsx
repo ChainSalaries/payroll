@@ -12,6 +12,7 @@ import Iconify from '@/components/iconify'
 import moment from 'moment' // Add this line to import the 'moment' library
 import { useBoolean } from '@/hooks/use-boolean'
 import AddEmployeeDialog from './AddEmployeeDialog'
+import useGetOrganization from '@/hooks/use-get-organization'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -95,12 +96,14 @@ export function DataGridBasic({ data }: DataGridProps) {
 }
 
 type Props = {
+  address: `0x${string}`
   organization: Organization
 }
 
-export default function OrganizationSection({ organization }: Props) {
+export default function OrganizationSection({ address, organization }: Props) {
   const dispatch = useAppDispatch()
   const newEmployeeDialog = useBoolean()
+  const { data } = useGetOrganization(address)
 
   return (
     <>

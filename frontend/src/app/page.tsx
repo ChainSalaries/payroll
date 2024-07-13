@@ -14,6 +14,7 @@ import { Organization } from '@/state/types'
 import OrganizationSection from '@/sections/employer/OrganizationSection'
 import EmployeeSection from '@/sections/employee/EmployeeSection'
 import { setOrganization } from '@/state/app'
+import useGetOrganization from '@/hooks/use-get-organization'
 
 export default function Home() {
   const dispatch = useAppDispatch()
@@ -50,7 +51,9 @@ export default function Home() {
           {isConnecting && <Typography textAlign={'center'}>Connecting...</Typography>}
           {loading && <Typography textAlign={'center'}>Loading...</Typography>}
           {!loading && isEmployer && !org?.name && <CreateOrganization />}
-          {!loading && isEmployer && !!org?.name && <OrganizationSection organization={org} />}
+          {!loading && isEmployer && !!address && !!org?.name && (
+            <OrganizationSection address={address} organization={org} />
+          )}
           {!loading && !isEmployer && !isConnecting && !isDisconnected && <EmployeeSection />}
         </Stack>
       </div>
