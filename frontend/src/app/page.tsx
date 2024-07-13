@@ -51,9 +51,7 @@ export default function Home() {
           {!loading && isEmployer && !!address && !org?.orgName && (
             <CreateOrganization address={address} />
           )}
-          {!loading && isEmployer && !!address && !!org?.orgName && (
-            <OrganizationSection address={address} />
-          )}
+          {!loading && isEmployer && !!address && <OrganizationSection address={address} />}
           {!loading && !isEmployer && !isConnecting && !isDisconnected && <EmployeeSection />}
         </Stack>
       </div>

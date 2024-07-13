@@ -124,11 +124,11 @@ export default function OrganizationSection({ address }: Props) {
 
   const { data: employeesAdded } = useQuery(GET_EMPLOYEES, {
     variables: {
-      companyAccount: org?.orgAddress,
+      companyAddress: org?.orgAddress,
     },
   })
-  const { data: orgAdded } = useQuery(ORG_ADDED, { variables: { orgId: org?.orgId } })
-  const { data: orgFunded } = useQuery(ORG_FUNDED, { variables: { orgId: org?.orgId } })
+  const { data: orgAdded } = useQuery(ORG_ADDED, { variables: { address: org?.orgAddress } })
+  const { data: orgFunded } = useQuery(ORG_FUNDED, { variables: { address: org?.orgAddress } })
 
   const events = useMemo(() => {
     const results = []
@@ -174,10 +174,10 @@ export default function OrganizationSection({ address }: Props) {
       }
 
       dispatch(setOrganization(updatedOrg))
-      fetchEmployees(data.employeeAddresses).then((employees) => {
-        console.log('employees', employees)
-        dispatch(setOrganization({ ...updatedOrg, employees }))
-      })
+      // fetchEmployees(data.employeeAddresses).then((employees) => {
+      //   console.log('employees', employees)
+      //   dispatch(setOrganization({ ...updatedOrg, employees }))
+      // })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, dispatch])

@@ -13,7 +13,7 @@ const useGetOrganization = (address: `0x${string}`) => {
     address: PAYROLL_CONTRACT_ADDRESS,
   })
 
-  console.log('result', data, isLoading, isSuccess)
+  console.log('useGetOrganization', data, isLoading, isSuccess)
   return { data, isLoading, isSuccess, refetch }
 }
 

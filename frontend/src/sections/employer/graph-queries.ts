@@ -1,36 +1,34 @@
 import { gql } from '@apollo/client'
 
 export const GET_EMPLOYEES = gql`
-  query Employees($companyAccount: String!) {
-    employeeAddeds(where: { companyAccount: $companyAccount }) {
+  query Employees($companyAddress: String!) {
+    employeeAddeds(where: { companyAddress: $companyAddress }) {
       id
       activity
-      startMoment
-      employeeAccount
-      companyAccount
-      dailySalaryWei
+      employeeAddress
+      companyAddress
+      dailyWageWei
       blockTimestamp
     }
   }
 `
 
 export const ORG_ADDED = gql`
-  query OrgAdded($orgId: Int!) {
-    organizationAddeds(where: { orgId: $orgId }) {
+  query OrgAdded($address: Bytes!) {
+    companyAddeds(where: { companyAddress: $address }) {
       id
-      orgId
-      orgName
-      orgAddress
+      companyName
+      companyAddress
       blockTimestamp
     }
   }
 `
 
 export const ORG_FUNDED = gql`
-  query OrgFunded($orgId: Int!) {
-    treasuryFundeds(where: { orgId: $orgId }) {
+  query OrgFunded($address: Bytes!) {
+    companyFunded(where: { companyAddress: $address }) {
       id
-      orgId
+      companyAddress
       amount
       blockTimestamp
     }
