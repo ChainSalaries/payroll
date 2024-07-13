@@ -27,7 +27,7 @@ export default function EmployeeInformation({ address }: Props) {
   }
   return (
     <div>
-      {employeeInfo.}
+
 
       <Stack sx={{ width: '60%' }}>
         <div>
