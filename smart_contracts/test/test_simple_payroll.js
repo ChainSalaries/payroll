@@ -40,17 +40,22 @@ describe("SimplePayroll Contract", function () {
     });
 
     it("should add an employee", async function () {
-      await payroll.connect(company).addEmployee(employee.address);
+      const dailyWage = ethers.utils.parseEther("0.0001");
+      const activity = "Developer";
+      await payroll.connect(company).addEmployee(employee.address, dailyWage, activity);
 
       const addedEmployee = await payroll.employees(employee.address);
       expect(addedEmployee.employeeAddress).to.equal(employee.address);
-      expect(addedEmployee.dailyWage).to.equal(ethers.utils.parseEther("0.0001"));
+      expect(addedEmployee.dailyWageWei).to.equal(dailyWage);
       expect(addedEmployee.daysWorked).to.equal(0);
       expect(addedEmployee.companyAddress).to.equal(company.address);
+      expect(addedEmployee.activity).to.equal(activity);
     });
 
     it("should update days worked for an employee", async function () {
-      await payroll.connect(company).addEmployee(employee.address);
+      const dailyWage = ethers.utils.parseEther("0.0001");
+      const activity = "Developer";
+      await payroll.connect(company).addEmployee(employee.address, dailyWage, activity);
       await payroll.connect(company).updateDaysWorked(employee.address, 10);
 
       const updatedEmployee = await payroll.employees(employee.address);
@@ -61,7 +66,9 @@ describe("SimplePayroll Contract", function () {
   describe("Payout Function", function () {
     beforeEach(async function () {
       await payroll.connect(company).addCompany("Company Inc.");
-      await payroll.connect(company).addEmployee(employee.address);
+      const dailyWage = ethers.utils.parseEther("0.0001");
+      const activity = "Developer";
+      await payroll.connect(company).addEmployee(employee.address, dailyWage, activity);
 
       const fundAmount = ethers.utils.parseEther("1");
       await payroll.connect(company).fundCompany({ value: fundAmount });
@@ -90,47 +97,42 @@ describe("SimplePayroll Contract", function () {
       await expect(payroll.connect(company).payout(employee.address)).to.be.revertedWith("Insufficient funds in company treasury");
     });
 
-    // it("should fail if there are insufficient funds in the contract", async function () {
-    //     await payroll.connect(company).updateDaysWorked(employee.address, 10000000);
-      
-    //     // Withdraw funds from the contract to ensure it has insufficient balance
-    //     const contractBalance = await ethers.provider.getBalance(payroll.address);
-    //     await company.sendTransaction({ to: owner.address, value: contractBalance });
-      
-    //     await expect(payroll.connect(company).payout(employee.address)).to.be.revertedWith("Insufficient ETH balance in contract");
-    //   });
-
     it("should verify an employee's worldid", async function () {
-        await payroll.connect(company).addEmployee(employee.address);
-  
-        await payroll.connect(company).verifyEmployee(employee.address);
-  
-        const verifiedEmployee = await payroll.employees(employee.address);
-        expect(verifiedEmployee.worldidverified).to.equal(1);
-      });
+      const dailyWage = ethers.utils.parseEther("0.0001");
+      const activity = "Developer";
+      await payroll.connect(company).addEmployee(employee.address, dailyWage, activity);
 
-      it("should get the details of a company", async function () {
-        await payroll.connect(company).addCompany("Company Inc.");
-  
-        const companyDetails = await payroll.getCompany(company.address);
-  
-        expect(companyDetails.companyAddress).to.equal(company.address);
-        expect(companyDetails.companyName).to.equal("Company Inc.");
-        expect(companyDetails.treasury).to.equal(0);
-      });
-  
-      it("should get the details of an employee", async function () {
-        await payroll.connect(company).addCompany("Company Inc.");
-        await payroll.connect(company).addEmployee(employee.address);
-        await payroll.connect(company).updateDaysWorked(employee.address, 5);
-  
-        const employeeDetails = await payroll.getEmployee(employee.address);
-  
-        expect(employeeDetails.employeeAddress).to.equal(employee.address);
-        expect(employeeDetails.companyAddress).to.equal(company.address);
-        expect(employeeDetails.dailyWage).to.equal(ethers.utils.parseEther("0.0001"));
-        expect(employeeDetails.daysWorked).to.equal(5);
-        expect(employeeDetails.worldidverified).to.equal(0);
-      });
+      await payroll.connect(company).verifyEmployee(employee.address);
+
+      const verifiedEmployee = await payroll.employees(employee.address);
+      expect(verifiedEmployee.worldidverified).to.equal(1);
+    });
+
+    it("should get the details of a company", async function () {
+      await payroll.connect(company).addCompany("Company Inc.");
+
+      const companyDetails = await payroll.getCompany(company.address);
+
+      expect(companyDetails.companyAddress).to.equal(company.address);
+      expect(companyDetails.companyName).to.equal("Company Inc.");
+      expect(companyDetails.treasury).to.equal(0);
+    });
+
+    it("should get the details of an employee", async function () {
+      const dailyWage = ethers.utils.parseEther("0.0001");
+      const activity = "Developer";
+      await payroll.connect(company).addCompany("Company Inc.");
+      await payroll.connect(company).addEmployee(employee.address, dailyWage, activity);
+      await payroll.connect(company).updateDaysWorked(employee.address, 5);
+
+      const employeeDetails = await payroll.getEmployee(employee.address);
+
+      expect(employeeDetails.employeeAddress).to.equal(employee.address);
+      expect(employeeDetails.companyAddress).to.equal(company.address);
+      expect(employeeDetails.dailyWageWei).to.equal(dailyWage);
+      expect(employeeDetails.daysWorked).to.equal(5);
+      expect(employeeDetails.worldidverified).to.equal(0);
+      expect(employeeDetails.activity).to.equal(activity);
+    });
   });
 });
