@@ -40,7 +40,7 @@ export default function NavMobile({ offsetTop, data }: NavProps) {
           }),
         }}
       >
-        <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
+        <SvgColor src="/assets/icons/ic_menu_item.svg" />
       </IconButton>
 
       <Drawer

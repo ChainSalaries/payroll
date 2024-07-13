@@ -2,13 +2,14 @@
 
 import { useAppDispatch } from '@/state/hooks'
 import Box from '@mui/material/Box'
-import { Button, Stack, TextField, Typography } from '@mui/material'
+import { Button, Card, CardHeader, Stack, TextField, Typography } from '@mui/material'
 import { Employee, Organization } from '@/state/types'
 // @mui
 import IconButton from '@mui/material/IconButton'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 // components
 import Iconify from '@/components/iconify'
+import moment from 'moment' // Add this line to import the 'moment' library
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -40,15 +41,36 @@ const columns: GridColDef[] = [
     headerAlign: 'center',
   },
   {
-    field: 'action',
+    field: 'joined',
+    headerName: 'Joined',
+    flex: 1,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => moment.unix(params.row.joined).format('YYYY-MM-DD'),
+  },
+  {
+    field: 'pay-action',
     headerName: ' ',
-    width: 80,
-    align: 'right',
+    width: 60,
+    align: 'center',
     sortable: false,
     disableColumnMenu: true,
     renderCell: () => (
-      <IconButton>
-        <Iconify icon="eva:more-vertical-fill" />
+      <IconButton color="primary">
+        <Iconify icon="ic:outline-payment" />
+      </IconButton>
+    ),
+  },
+  {
+    field: 'delete-action',
+    headerName: ' ',
+    width: 60,
+    align: 'center',
+    sortable: false,
+    disableColumnMenu: true,
+    renderCell: () => (
+      <IconButton color="error">
+        <Iconify icon="ic:outline-delete-forever" />
       </IconButton>
     ),
   },
@@ -78,25 +100,13 @@ export default function OrganizationSection({ organization }: Props) {
   const dispatch = useAppDispatch()
 
   return (
-    <div>
-      <Stack sx={{ width: '100%' }}>
-        <Typography margin={2} variant="h2">
-          Employees
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            p: 1,
-            m: 1,
-            gap: 2,
-            width: '100%',
-            borderRadius: 1,
-          }}
-        >
+    <Stack sx={{ width: '100%' }}>
+      <Card>
+        <CardHeader title="Employee" sx={{ mb: 2 }} />
+        <Box sx={{ height: 390 }}>
           <DataGridBasic data={organization.employees} />
         </Box>
-      </Stack>
-    </div>
+      </Card>
+    </Stack>
   )
 }
