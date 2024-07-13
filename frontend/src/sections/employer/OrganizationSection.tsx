@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppDispatch } from '@/state/hooks'
+import { useAppDispatch, useAppSelector } from '@/state/hooks'
 import Box from '@mui/material/Box'
 import { Button, Card, CardHeader, Stack, TextField, Typography } from '@mui/material'
 import { Employee, Organization } from '@/state/types'
@@ -13,6 +13,10 @@ import moment from 'moment' // Add this line to import the 'moment' library
 import { useBoolean } from '@/hooks/use-boolean'
 import AddEmployeeDialog from './AddEmployeeDialog'
 import useGetOrganization from '@/hooks/use-get-organization'
+import { useEffect } from 'react'
+import { setOrganization } from '@/state/app'
+import { fetchEmployees } from '@/services/read-services'
+import { selectOrganization } from '@/state/selectors'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -24,14 +28,21 @@ const columns: GridColDef[] = [
   {
     field: 'name',
     headerName: 'Name',
-    width: 160,
+    width: 120,
     editable: true,
+  },
+  {
+    field: 'activity',
+    headerName: 'Activity',
+    flex: 1,
+    align: 'center',
+    headerAlign: 'center',
   },
   {
     field: 'salary',
     headerName: 'Salary',
     type: 'number',
-    width: 120,
+    width: 60,
     editable: true,
     align: 'center',
     headerAlign: 'center',
@@ -44,12 +55,12 @@ const columns: GridColDef[] = [
     headerAlign: 'center',
   },
   {
-    field: 'joined',
+    field: 'startMoment',
     headerName: 'Joined',
     flex: 1,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => moment.unix(params.row.joined).format('YYYY-MM-DD'),
+    renderCell: (params) => moment.unix(params.row.startMoment).format('YYYY-MM-DD'),
   },
   {
     field: 'pay-action',
@@ -84,6 +95,7 @@ type DataGridProps = {
 }
 
 export function DataGridBasic({ data }: DataGridProps) {
+  console.log('grid data', data)
   return (
     <DataGrid
       columns={columns}
@@ -97,13 +109,37 @@ export function DataGridBasic({ data }: DataGridProps) {
 
 type Props = {
   address: `0x${string}`
-  organization: Organization
 }
 
-export default function OrganizationSection({ address, organization }: Props) {
+export default function OrganizationSection({ address }: Props) {
   const dispatch = useAppDispatch()
   const newEmployeeDialog = useBoolean()
+  const org = useAppSelector(selectOrganization)
   const { data } = useGetOrganization(address)
+
+  useEffect(() => {
+    if (data) {
+      const updatedOrg: Organization = {
+        orgAddress: data.orgAddress,
+        orgId: Number(data.orgId),
+        orgName: data.orgName,
+        orgTreasury: Number(data.orgTreasury),
+        employeeCount: Number(data.employeeCount),
+        employees: org?.employees,
+      }
+
+      dispatch(setOrganization(updatedOrg))
+      fetchEmployees(data.employeeAddresses).then((employees) => {
+        console.log('employees', employees)
+        dispatch(setOrganization({ ...updatedOrg, employees }))
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, dispatch])
+
+  if (!org) {
+    return <Typography textAlign={'center'}>Loading...</Typography>
+  }
 
   return (
     <>
@@ -121,11 +157,11 @@ export default function OrganizationSection({ address, organization }: Props) {
         <Card>
           <CardHeader title="Employee" sx={{ mb: 2 }} />
           <Box sx={{ height: 390 }}>
-            <DataGridBasic data={organization.employees} />
+            <DataGridBasic data={org.employees ?? []} />
           </Box>
         </Card>
       </Stack>
-      <AddEmployeeDialog organization={organization} dialog={newEmployeeDialog} />
+      <AddEmployeeDialog organization={org} dialog={newEmployeeDialog} />
     </>
   )
 }
