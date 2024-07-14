@@ -36,6 +36,18 @@ type EmployeeAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type Employee @entity {
+  id: Bytes!
+  employeeAddress: Bytes! # address
+  companyAddress: Bytes! # address
+  dailyWageWei: BigInt! # uint256
+  activity: String! # string
+  verified: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  daysWorked: BigInt! # uint256
+}
+
 type EmployeeVerified @entity(immutable: true) {
   id: Bytes!
   employeeAddress: Bytes! # address

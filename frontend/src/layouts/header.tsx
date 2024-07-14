@@ -17,6 +17,7 @@ import { useAppSelector } from '@/state/hooks'
 import { selectOrganization, selectRole } from '@/state/selectors'
 import { Typography } from '@mui/material'
 import { bgBlur } from '@/theme/css'
+import { formatEther } from 'viem'
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +64,7 @@ export default function Header() {
             >
               {organization?.orgName}
             </Typography>
-            Balance: {organization?.orgTreasury}
+            Balance: {formatEther(BigInt(organization?.orgTreasury ?? 0))}ETH
           </Stack>
         </Container>
         <Container sx={{ height: 1, display: 'flex', alignItems: 'center' }}>

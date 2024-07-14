@@ -12,6 +12,8 @@ import { useAppDispatch, useAppSelector } from '@/state/hooks'
 import CreateOrganization from '@/sections/employer/CreateOrganization'
 import OrganizationSection from '@/sections/employer/OrganizationSection'
 import EmployeeSection from '@/sections/employee/EmployeeSection'
+import { fetchOrganization } from '@/services/read-services'
+import { setOrganization } from '@/state/app'
 
 export default function Home() {
   const dispatch = useAppDispatch()
@@ -21,17 +23,15 @@ export default function Home() {
   const org = useAppSelector(selectOrganization)
   const isEmployer = role === 'employer'
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setLoading(true)
-  //     const response = await fetch('/api/organization?owner=0xABC') // + address)
-  //     const data = (await response.json()) as Organization
-  //     setOrg(data)
-  //     dispatch(setOrganization(data))
-  //     setLoading(false)
-  //   }
-  //   fetchData()
-  // }, [address, dispatch])
+  useEffect(() => {
+    async function fetchData() {
+      if (!address) return
+      const org = await fetchOrganization(address)
+      dispatch(setOrganization(org))
+      setLoading(false)
+    }
+    fetchData()
+  }, [address, dispatch])
 
   console.log('org', org)
   return (
@@ -51,7 +51,9 @@ export default function Home() {
           {!loading && isEmployer && !!address && !org?.orgName && (
             <CreateOrganization address={address} />
           )}
-          {!loading && isEmployer && !!address && <OrganizationSection address={address} />}
+          {!loading && isEmployer && !!address && !!org?.orgName && (
+            <OrganizationSection address={address} />
+          )}
           {!loading && !isEmployer && !isConnecting && !isDisconnected && <EmployeeSection />}
         </Stack>
       </div>

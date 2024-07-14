@@ -10,16 +10,14 @@ import IconButton from '@mui/material/IconButton'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 // components
 import Iconify from '@/components/iconify'
-import moment from 'moment' // Add this line to import the 'moment' library
+import moment from 'moment'
 import { useBoolean } from '@/hooks/use-boolean'
 import AddEmployeeDialog from './AddEmployeeDialog'
-import useGetOrganization from '@/hooks/use-get-organization'
 import { useEffect, useMemo } from 'react'
 import { setOrganization } from '@/state/app'
-import { fetchEmployees } from '@/services/read-services'
 import { selectOrganization } from '@/state/selectors'
 import OrganizationTimeline from './OrganizationTimeLine'
-import { GET_EMPLOYEES, ORG_ADDED, ORG_FUNDED } from './graph-queries'
+import { EMPLOYEE_ADDS, GET_EMPLOYEES, ORG_ADDED, ORG_FUNDED } from './graph-queries'
 import EnsName from '@/components/ens-name'
 import { formatEther } from 'viem'
 
@@ -51,7 +49,7 @@ const columns: GridColDef[] = [
     editable: true,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => formatEther(params.row.salary),
+    renderCell: (params) => ` ${formatEther(params.row.salary)}ETH`,
   },
   {
     field: 'verified',
@@ -61,12 +59,11 @@ const columns: GridColDef[] = [
     headerAlign: 'center',
   },
   {
-    field: 'startMoment',
-    headerName: 'Joined',
+    field: 'daysWorked',
+    headerName: 'Days Worked',
     flex: 1,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => moment.unix(params.row.startMoment).format('YYYY-MM-DD'),
   },
   {
     field: 'pay-action',
@@ -116,35 +113,33 @@ type Props = {
   address: Address
 }
 
-export default function OrganizationSection({ address }: Props) {
+function OrganizationEvents({ address }: Props) {
   const dispatch = useAppDispatch()
-  const newEmployeeDialog = useBoolean()
   const org = useAppSelector(selectOrganization)
-  const { data, refetch } = useGetOrganization(address)
 
-  const { data: employeesAdded } = useQuery(GET_EMPLOYEES, {
+  const { data: employeesAdded } = useQuery(EMPLOYEE_ADDS, {
     variables: {
-      companyAddress: org?.orgAddress,
+      companyAddress: address,
     },
   })
-  const { data: orgAdded } = useQuery(ORG_ADDED, { variables: { address: org?.orgAddress } })
-  const { data: orgFunded } = useQuery(ORG_FUNDED, { variables: { address: org?.orgAddress } })
+  const { data: orgAdded } = useQuery(ORG_ADDED, { variables: { address } })
+  const { data: orgFunded } = useQuery(ORG_FUNDED, { variables: { address } })
 
   const events = useMemo(() => {
     const results = []
     if (orgAdded) {
       results.push({
-        id: orgAdded.organizationAddeds[0].id,
+        id: orgAdded.companyAddeds[0].id,
         title: 'Organization Created',
-        time: orgAdded.organizationAddeds[0].blockTimestamp,
+        time: orgAdded.companyAddeds[0].blockTimestamp,
         type: 'order1',
       })
     }
     if (orgFunded) {
-      for (const funded of orgFunded.treasuryFundeds) {
+      for (const funded of orgFunded.companyFundeds) {
         results.push({
           id: funded.id,
-          title: 'Organization Funded',
+          title: `Organization Funded ${formatEther(funded.amount)}ETH`,
           time: funded.blockTimestamp,
           type: 'order2',
         })
@@ -163,21 +158,40 @@ export default function OrganizationSection({ address }: Props) {
 
     return results.sort((a, b) => b.time - a.time)
   }, [employeesAdded, orgAdded, orgFunded])
+  return <OrganizationTimeline title="Events" subheader="the history" list={events} />
+}
+
+export default function OrganizationSection({ address }: Props) {
+  const dispatch = useAppDispatch()
+  const newEmployeeDialog = useBoolean()
+  const org = useAppSelector(selectOrganization)
+
+  const { data } = useQuery(GET_EMPLOYEES, {
+    variables: {
+      companyAddress: address,
+    },
+  })
 
   useEffect(() => {
-    if (data) {
-      const updatedOrg: Organization = {
-        orgAddress: data.companyAddress,
-        orgName: data.companyName,
-        orgTreasury: Number(data.treasury),
-        employees: org?.employees,
-      }
-
-      dispatch(setOrganization(updatedOrg))
-      // fetchEmployees(data.employeeAddresses).then((employees) => {
-      //   console.log('employees', employees)
-      //   dispatch(setOrganization({ ...updatedOrg, employees }))
-      // })
+    if (org && data) {
+      const employees = data.employees.map(
+        (employee: {
+          employeeAddress: any
+          companyAddress: any
+          activity: any
+          dailyWageWei: any
+          verified: any
+          daysWorked: any
+        }) => ({
+          address: employee.employeeAddress,
+          orgAddress: employee.companyAddress,
+          activity: employee.activity,
+          salary: Number(employee.dailyWageWei),
+          verified: employee.verified,
+          daysWorked: employee.daysWorked,
+        }),
+      )
+      dispatch(setOrganization({ ...org, employees }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, dispatch])
@@ -209,7 +223,7 @@ export default function OrganizationSection({ address }: Props) {
             <EmployeeDataGrid data={org.employees ?? []} />
           </Box>
         </Card>
-        <OrganizationTimeline title="Events" subheader="the history" list={events} />
+        {org && <OrganizationEvents address={address} />}
       </Stack>
       <AddEmployeeDialog organization={org} dialog={newEmployeeDialog} />
     </>

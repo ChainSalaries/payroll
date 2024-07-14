@@ -3,7 +3,7 @@ import { baseSepolia } from 'viem/chains'
 import payrollAbi from '@/config/payrollAbi'
 import { readContracts, readContract } from '@wagmi/core'
 import { config } from '@/config'
-import { Employee } from '@/state/types'
+import { Address, Employee, Organization } from '@/state/types'
 import { PAYROLL_CONTRACT_ADDRESS } from '@/config/constants'
 
 export async function fetchEmployees(employeeAddresses: readonly `0x${string}`[]) {
@@ -56,4 +56,20 @@ export async function fetchEmployee(address: `0x${string}`) {
     activity: result.activity,
     daysWorked: Number(result.daysWorked),
   } as Employee
+}
+
+export async function fetchOrganization(address: Address) {
+  const result = await readContract(config, {
+    chainId: baseSepolia.id,
+    abi: payrollAbi,
+    functionName: 'getCompany',
+    args: [address],
+    address: PAYROLL_CONTRACT_ADDRESS,
+  })
+
+  return {
+    orgAddress: result.companyAddress,
+    orgName: result.companyName,
+    orgTreasury: Number(result.treasury),
+  } as Organization
 }
