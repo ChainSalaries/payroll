@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify'
 import { getEnsAddress } from '@wagmi/core'
 import { normalize } from 'viem/ens'
-import { mainnet } from 'wagmi/chains'
+import { sepolia } from 'wagmi/chains'
 // @mui
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -60,7 +60,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
       const currentRequestId = requestIdRef.current
 
       getEnsAddress(config, {
-        chainId: mainnet.id,
+        chainId: sepolia.id,
         name: normalize(value),
       }).then((address) => {
         if (currentRequestId === requestIdRef.current) {

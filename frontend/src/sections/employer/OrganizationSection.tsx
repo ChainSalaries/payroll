@@ -227,7 +227,7 @@ export default function OrganizationSection({ address }: Props) {
       <Stack sx={{ width: '100%' }} spacing={2}>
         <Card>
           <CardHeader
-            title="Employee"
+            title="Employees"
             sx={{ mb: 2 }}
             action={
               <Button
