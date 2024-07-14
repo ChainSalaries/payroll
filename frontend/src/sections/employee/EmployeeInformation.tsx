@@ -13,25 +13,46 @@ import moment from 'moment'
 import { formatEther } from 'viem'
 import Iconify from '@/components/iconify'
 import EnsName from '@/components/ens-name'
+import { paySalary } from '@/services/write-services'
+import { toast } from 'react-toastify'
+import { useEnsAvatar } from 'wagmi'
+import { normalize } from 'viem/ens'
 //import fetch from 'node-fetch'
+
+import { getEnsName } from '@wagmi/core'
+import { sepolia } from 'wagmi/chains'
+import { config } from '@/config'
+
 
 type Props = {
   address: `0x${string}`
 }
 export default function EmployeeInformation({ address }: Props) {
   const [employeeInfo, setEmployeeInfo] = useState<Employee | undefined>(undefined);
-  // const employeeInfo = {
-  //   address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-  //   orgAddress: '0xabcdef',
-  //   verified: false,
-  //   salary: 100000000000,
-  //   activity: 'Developer',
-  //   daysWorked: 32,
-  // } as Employee
+  const [ensName, setEnsName] = useState<string>('')
+  const [employeeAvatar, setEmployeeAvatar] = useState<string>("")
+  console.log("hahaaa")
+  getEnsName(config, {
+    chainId: sepolia.id,
+    address,
+  }).then((ensName) => {
+    if (!ensName) {
+      return
+    }
+    setEnsName(ensName)
+  })
+
+  const { data, isError, isLoading } = useEnsAvatar({
+    name: ensName,
+  })
+
 
   fetchEmployee(address).then((employee) => {
     setEmployeeInfo(employee)
+    console.log(employee)
   })
+
+  const timeSeconds = Date.now() / 1000
 
   if (!employeeInfo) {
     return null
@@ -63,7 +84,7 @@ export default function EmployeeInformation({ address }: Props) {
                       boxShadow: 5,
                     }}
                     alt="The house from the offer."
-                    src="https://c8.alamy.com/comp/2HWB4X9/bored-ape-yacht-club-nft-artwork-trippy-color-ape-with-gradient-background-crypto-graphic-asset-flat-vector-illustration-2HWB4X9.jpg"
+                    src={data ? data : "/loading.webp"}
                   />
                 </Paper>
                 <div>
@@ -77,17 +98,17 @@ export default function EmployeeInformation({ address }: Props) {
                 <div className="employeeData">
                   <div className="employeeDataLabels">
                     <ul className="employeeDataLabels">
-                      <li>🗓️ Start date:</li>
+                      <li>🗓️ Days worked:</li>
+                      <li>💰 Day Wage:</li>
                       <li>⚙️ Activity:</li>
-                      <li>💰 Salary:</li>
                       <li>🌎 World ID:</li>
                     </ul>
                   </div>
                   <div className="employeeDataValues">
                     <ul className="employeeDataValues">
-                      <li>{moment.unix(employeeInfo.daysWorked).format('MMMM Do YYYY')}</li>
-                      <li>{employeeInfo.activity}</li>
+                      <li>{employeeInfo.daysWorked}</li>
                       <li>{formatEther(BigInt(employeeInfo.salary))} Ξ</li>
+                      <li>{employeeInfo.activity}</li>
                       <li>{employeeInfo.verified ? 'Verified' : 'Not verified'}</li>
                     </ul>
                   </div>
@@ -97,12 +118,31 @@ export default function EmployeeInformation({ address }: Props) {
                 </div>
                 <div className="totalBalance">
                   <p className="balancep">
-                    Balance: <span className="value">1.25 Ξ</span>
+                    Balance: <span className="value">{formatEther(BigInt(employeeInfo.daysWorked * employeeInfo.salary))} Ξ</span>
                   </p>
                   <Button
                     style={{ minWidth: '200px', minHeight: '35px' }}
                     variant="contained"
                     color="success"
+                    disabled={!employeeInfo.verified}
+                    onClick={async () => {
+                      try {
+                        const tx = await paySalary(address)
+                        toast.success(`🦄 salary payment transaction submitted! transaction: ${tx}`)
+                      } catch (error) {
+                        console.error(error)
+                        // toast.error(`Payment failed: ${error}`, {
+                        //   position: 'top-right',
+                        //   autoClose: 5000,
+                        //   hideProgressBar: false,
+                        //   closeOnClick: true,
+                        //   pauseOnHover: true,
+                        //   draggable: true,
+                        //   progress: undefined,
+                        //   theme: 'light',
+                        // })
+                      }
+                    }}
                   >
                     <Iconify icon="tabler:world" />
                     Pay Now

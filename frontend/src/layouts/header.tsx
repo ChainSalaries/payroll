@@ -62,7 +62,7 @@ export default function Header() {
               variant="h4"
               sx={{ display: { xs: 'none', md: 'block' }, textTransform: 'capitalize' }}
             >
-              {organization?.orgName}
+              {organization?.orgName || "Sweet Drinks Ltd."}
             </Typography>
             Balance: {formatEther(BigInt(organization?.orgTreasury ?? 0))}ETH
           </Stack>

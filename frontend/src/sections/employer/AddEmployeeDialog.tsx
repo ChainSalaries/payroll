@@ -38,7 +38,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
   const onAddEmployee = async () => {
     if (!employeeAddress || !salary || !activity) return
     try {
-      const tx = await addNewEmployee(employeeAddress as Address, salary, activity)
+      const tx = await addNewEmployee(employeeAddress as Address, salary * 1000000000000000000, activity)
       toast.success(`Add employee transaction submitted. transaction: ${tx}`)
     } catch (err) {
       toast.error(`Add employee: ${error}`)
@@ -85,8 +85,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
 
         <DialogContent>
           <Typography sx={{ mb: 3 }}>
-            After the employee account is added, the employee must be verified with worldId to
-            approve that they are real huamn being instad of AI
+            After adding an employee, they must verify their personhood with World ID before receiving payments.
           </Typography>
 
           <TextField
@@ -111,7 +110,7 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
             value={salary}
             onChange={(e) => setSalary(Number(e.target.value))}
             InputProps={{
-              endAdornment: <InputAdornment position="end">WEI</InputAdornment>,
+              endAdornment: <InputAdornment position="end">ETH</InputAdornment>,
             }}
           />
           <TextField

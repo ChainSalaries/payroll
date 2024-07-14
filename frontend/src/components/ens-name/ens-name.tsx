@@ -2,7 +2,7 @@
 
 import { Address } from '@/state/types'
 import { getEnsName } from '@wagmi/core'
-import { mainnet } from 'wagmi/chains'
+import { sepolia } from 'wagmi/chains'
 import { config } from '@/config'
 import { useState } from 'react'
 
@@ -13,7 +13,7 @@ type Props = {
 export default function EnsName({ address }: Props) {
   const [ensName, setEnsName] = useState<string>('')
   getEnsName(config, {
-    chainId: mainnet.id,
+    chainId: sepolia.id,
     address,
   }).then((ensName) => {
     if (!ensName) return

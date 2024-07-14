@@ -83,16 +83,16 @@ const columns: GridColDef[] = [
             toast.success(`🦄 salary payment transaction submitted! transaction: ${tx}`)
           } catch (error) {
             console.error(error)
-            toast.error(`Payment failed: ${error}`, {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: 'light',
-            })
+            // toast.error(`Payment failed: ${error}`, {
+            //   position: 'top-right',
+            //   autoClose: 5000,
+            //   hideProgressBar: false,
+            //   closeOnClick: true,
+            //   pauseOnHover: true,
+            //   draggable: true,
+            //   progress: undefined,
+            //   theme: 'light',
+            // })
           }
         }}
       >
