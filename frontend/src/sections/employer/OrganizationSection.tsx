@@ -1,6 +1,7 @@
 'use client'
 
 import { useAppDispatch, useAppSelector } from '@/state/hooks'
+import { toast } from 'react-toastify'
 import Box from '@mui/material/Box'
 import { useQuery } from '@apollo/client'
 import { Button, Card, CardHeader, Stack, Typography } from '@mui/material'
@@ -20,6 +21,7 @@ import OrganizationTimeline from './OrganizationTimeLine'
 import { EMPLOYEE_ADDS, GET_EMPLOYEES, ORG_ADDED, ORG_FUNDED } from './graph-queries'
 import EnsName from '@/components/ens-name'
 import { formatEther } from 'viem'
+import { paySalary } from '@/services/write-services'
 
 // ----------------------------------------------------------------------
 const columns: GridColDef[] = [
@@ -72,8 +74,28 @@ const columns: GridColDef[] = [
     align: 'center',
     sortable: false,
     disableColumnMenu: true,
-    renderCell: () => (
-      <IconButton color="primary">
+    renderCell: (params) => (
+      <IconButton
+        color="primary"
+        onClick={async () => {
+          try {
+            const tx = await paySalary(params.row.address)
+            toast.success(`🦄 salary payment transaction submitted! transaction: ${tx}`)
+          } catch (error) {
+            console.error(error)
+            toast.error(`Payment failed: ${error}`, {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light',
+            })
+          }
+        }}
+      >
         <Iconify icon="ic:outline-payment" />
       </IconButton>
     ),
@@ -127,7 +149,7 @@ function OrganizationEvents({ address }: Props) {
 
   const events = useMemo(() => {
     const results = []
-    if (orgAdded) {
+    if (orgAdded && orgAdded.companyAddeds?.length) {
       results.push({
         id: orgAdded.companyAddeds[0].id,
         title: 'Organization Created',

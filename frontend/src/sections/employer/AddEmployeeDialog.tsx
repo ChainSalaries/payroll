@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import { getEnsAddress } from '@wagmi/core'
 import { normalize } from 'viem/ens'
 import { mainnet } from 'wagmi/chains'
@@ -36,7 +37,12 @@ export default function AddEmployeeDialog({ organization, dialog }: Props) {
 
   const onAddEmployee = async () => {
     if (!employeeAddress || !salary || !activity) return
-    await addNewEmployee(employeeAddress as Address, salary, activity)
+    try {
+      const tx = await addNewEmployee(employeeAddress as Address, salary, activity)
+      toast.success(`Add employee transaction submitted. transaction: ${tx}`)
+    } catch (err) {
+      toast.error(`Add employee: ${error}`)
+    }
     dialog.onFalse()
   }
 

@@ -40,3 +40,15 @@ export async function verifyEmployee(address: Address) {
   console.log('verifying employee', result)
   return result
 }
+
+export async function paySalary(address: Address) {
+  const result = await writeContract(config, {
+    chainId: baseSepolia.id,
+    abi: payrollAbi,
+    functionName: 'payout',
+    args: [address],
+    address: PAYROLL_CONTRACT_ADDRESS,
+  })
+  console.log('payout to employee', result)
+  return result
+}

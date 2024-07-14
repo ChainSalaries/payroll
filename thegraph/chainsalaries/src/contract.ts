@@ -111,4 +111,10 @@ export function handlePayoutMade(event: PayoutMadeEvent): void {
   entity.transactionHash = event.transaction.hash;
 
   entity.save();
+
+  const employee = Employee.load(event.params.employeeAddress);
+  if (!!employee) {
+    employee.daysWorked = BigInt.fromI32(0);
+    employee.save();
+  }
 }

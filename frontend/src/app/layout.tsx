@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import { ApolloProvider, AppStateProvider, Web3ModalProvider } from '@/context'
+import { ToastContainer } from 'react-toastify'
 import ThemeProvider from '@/theme'
 import './globals.css'
 import './employee.css'
+import 'react-toastify/dist/ReactToastify.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,6 +30,7 @@ export default function RootLayout({
             </ThemeProvider>
           </AppStateProvider>
         </ApolloProvider>
+        <ToastContainer />
       </body>
     </html>
   )

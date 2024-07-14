@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from 'react-toastify'
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Stack, TextField, Typography } from '@mui/material'
@@ -15,7 +16,13 @@ export default function CreateOrganization({ address }: Props) {
 
   const onSubmit = async () => {
     if (!!orgName) {
-      await createOrg(orgName)
+      try {
+        const tx = await createOrg(orgName)
+        toast.success(`Create organization transaction submitted. transaction: ${tx}`)
+      } catch (err) {
+        toast.error(`Create organization: ${err}`)
+      }
+
       console.log('create org with name', orgName)
     }
   }
